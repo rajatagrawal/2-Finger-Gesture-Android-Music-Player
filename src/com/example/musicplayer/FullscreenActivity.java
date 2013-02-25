@@ -235,7 +235,9 @@ public class FullscreenActivity extends Activity {
 				// TODO Auto-generated method stub
 				System.out.println("Play pause button clicked");
 				if (songPlayer.isPlaying())
-					songPlayer.stop();
+					songPlayer.pause();
+				else
+					songPlayer.start();
 				
 			}
 		});
