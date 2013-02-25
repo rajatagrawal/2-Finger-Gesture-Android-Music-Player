@@ -2,6 +2,7 @@ package com.example.musicplayer;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -18,6 +19,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.musicplayer.util.SystemUiHider;
 
@@ -80,6 +82,11 @@ public class FullscreenActivity extends Activity {
     Button playPauseButton;
     Button previousSongButton;
     Button nextSongButton;
+    ArrayList <Uri> songQueue;
+    ArrayList <String> songQueueNames;
+    String currentSong;
+    int currentSongIndex;
+    Toast messageToast;
     OnGestureListener flingGesture = new OnGestureListener()
     {
 	    @Override
@@ -226,6 +233,10 @@ public class FullscreenActivity extends Activity {
         playPauseButton = (Button) findViewById(R.id.playSongButton);
         previousSongButton = (Button) findViewById(R.id.previousSongButton);
         nextSongButton = (Button) findViewById(R.id.nextSongButton);
+        songQueue = new ArrayList<Uri>();
+        songQueueNames = new ArrayList<String>();
+        currentSongIndex = -1;
+        currentSong = null;
         
         
         playPauseButton.setOnClickListener(new View.OnClickListener() {
@@ -239,6 +250,116 @@ public class FullscreenActivity extends Activity {
 				else
 					songPlayer.start();
 				
+			}
+		});
+        
+        previousSongButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				System.out.println("Previous button clicked");
+				if (currentSongIndex ==0)
+					currentSongIndex = songQueue.size()-1;
+				else
+					currentSongIndex = currentSongIndex - 1;
+				songPlayer.reset();
+				try {
+					songPlayer.setDataSource(activity, songQueue.get(currentSongIndex));
+					songPlayer.prepare();
+					messageToast.cancel();
+					messageToast = Toast.makeText(activity,"Playing previous song " + songQueueNames.get(currentSongIndex),Toast.LENGTH_SHORT);
+					messageToast.show();
+					songPlayer.start();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalStateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				
+			}
+		});
+        
+        nextSongButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				System.out.println("Next Button Clicked");
+				currentSongIndex = (currentSongIndex + 1)%songQueue.size();
+				songPlayer.reset();
+				try {
+					songPlayer.setDataSource(activity,songQueue.get(currentSongIndex));
+					songPlayer.prepare();
+					messageToast.cancel();
+					messageToast = Toast.makeText(activity,"Playing next song " + songQueueNames.get(currentSongIndex),Toast.LENGTH_SHORT);
+					messageToast.show();
+					songPlayer.start();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalStateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+        
+        songPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+			
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				// TODO Auto-generated method stub
+				mp.reset();
+				currentSongIndex = (currentSongIndex + 1)%songQueue.size();
+				try {
+					mp.setDataSource(activity,songQueue.get(currentSongIndex));
+					mp.prepare();
+					messageToast.cancel();
+					messageToast = Toast.makeText(activity,"Playing Song " + songQueueNames.get(currentSongIndex),Toast.LENGTH_SHORT);
+					messageToast.show();
+					mp.start();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalStateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		});
+        
+        songPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+			
+			@Override
+			public boolean onError(MediaPlayer mp, int what, int extra) {
+				// TODO Auto-generated method stub
+				messageToast.cancel();
+				messageToast = Toast.makeText(activity,"There is an error with the music player!",Toast.LENGTH_SHORT);
+				messageToast.show();
+				return false;
 			}
 		});
         
@@ -371,6 +492,7 @@ public class FullscreenActivity extends Activity {
 										if ((Math.abs(event.getX() - initialX)/(System.currentTimeMillis() - initialTime))>swipePixels)
 										{
 											System.out.println("Swiped Left 1");
+											playPreviousSong();
 										}
 										initialX = event.getX();
 										initialY = event.getY();
@@ -401,6 +523,7 @@ public class FullscreenActivity extends Activity {
 										if ((Math.abs(event.getX()-initialX)/(System.currentTimeMillis()-initialTime)) > swipePixels)
 										{
 											System.out.println("Swiped Right 1");
+											playNextSong();
 										}
 										initialX = event.getX();
 										initialY = event.getY();
@@ -432,9 +555,15 @@ public class FullscreenActivity extends Activity {
 								if (Math.abs(event.getX() - initialX)/(System.currentTimeMillis() - initialTime)>swipePixels)
 								{
 									if (swipingRight == true)
+									{
+										playNextSong();
 										System.out.println("Swiped Right 2");
+									}
 									if (swipingLeft == true)
+									{
 										System.out.println("Swiped Left 2");
+										playPreviousSong();
+									}
 								}
 								swiping = false;
 								swipingLeft = false;
@@ -483,6 +612,7 @@ public class FullscreenActivity extends Activity {
 							if ((System.currentTimeMillis() - tap2Down) < tapTimeLimit)
 							{
 								System.out.println("Double Tap Detected");
+								pauseThePlayer();
 								tap1Up = -1;
 								tap1Down = -1;
 								tap2Up = -1;
@@ -505,9 +635,15 @@ public class FullscreenActivity extends Activity {
 							{
 								//System.out.println("came inside if and swiping right is "+ swipingRight + " and swiping left is " + swipingLeft);
 								if (swipingRight == true)
+								{
 									System.out.println("Swiping Right 3");
+									playNextSong();
+								}
 								else if (swipingLeft == true)
+								{
 									System.out.println("Swiping Left 3");
+									playPreviousSong();
+								}
 							}
 							//System.out.println("Didn't come inside if");
 							return true;
@@ -637,22 +773,46 @@ public class FullscreenActivity extends Activity {
     			MediaStore.Audio.Media.ALBUM,
     			MediaStore.Audio.Media.TITLE
     		};
-    	String selection = MediaStore.Audio.Media.IS_MUSIC + "!=0 " + "AND " + MediaStore.Audio.Media.ALBUM + " LIKE ? " + " AND " + MediaStore.Audio.Media.TITLE + " LIKE ?";
+    	String selection = MediaStore.Audio.Media.IS_MUSIC + "!=0 " + "AND " + MediaStore.Audio.Media.ALBUM + " LIKE ?";
     	String [] arguments = {
-    			data.getStringExtra("albumName"),
-    			data.getStringExtra("songName")
+    			data.getStringExtra("albumName")
     	};
     	Cursor cursor = contentResolver.query(uri,projection, selection, arguments,MediaStore.Audio.Media.TITLE);
+    	System.out.println("After doing the cursor in the first activity");
     	if (cursor == null)
     		System.out.println("There is an error getting the song");
     	else if (cursor.getCount() == 0)
-    		System.out.println("The song is not found in the library");
+    		System.out.println("The album songs are not found in the library");
     	else
     	{
     		cursor.moveToNext();
+    		songQueue.clear();
+    		this.songQueueNames.clear();
+    		for (int i=0;i<cursor.getCount();i++)
+    		{
+    			if (cursor.getString(3).equalsIgnoreCase(data.getStringExtra("songName")) );
+    			{
+    				currentSongIndex = i;
+    				currentSong = cursor.getString(3);
+    			}
+    			songQueue.add(Uri.parse(cursor.getString(1)));
+    			songQueueNames.add(cursor.getString(3));
+    			cursor.moveToNext();
+    		}
+    		if (songQueue.size() == 0)
+    		{
+    			messageToast.cancel();
+    			messageToast = Toast.makeText(this,"There is an error retrieving song files from the library",Toast.LENGTH_SHORT);
+    			messageToast.show();
+    			return;
+    		}
     		try {
-				songPlayer.setDataSource(this,Uri.parse(cursor.getString(1)));
+    			songPlayer.reset();
+    			songPlayer.setDataSource(this,songQueue.get(currentSongIndex));
 				songPlayer.prepare();
+				//messageToast.cancel();
+				messageToast = Toast.makeText(this,"Playing song" + songQueueNames.get(currentSongIndex), Toast.LENGTH_LONG);
+				messageToast.show();
 				songPlayer.start();
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
@@ -667,6 +827,14 @@ public class FullscreenActivity extends Activity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+    		catch(Exception error)
+    		{
+    			messageToast.cancel();
+    			messageToast =Toast.makeText(this,"Sorry there was an error playing this song",Toast.LENGTH_SHORT);
+    			messageToast.show();
+    			return;
+    			
+    		}
     		System.out.println("Finished setting up the source");
     	}
     }
@@ -725,6 +893,76 @@ public class FullscreenActivity extends Activity {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }*/
+    void playNextSong()
+    {
+    	currentSongIndex = (currentSongIndex + 1)%songQueue.size();
+    	songPlayer.reset();
+    	try {
+			songPlayer.setDataSource(this,songQueue.get(currentSongIndex));
+			songPlayer.prepare();
+			messageToast.cancel();
+			messageToast = Toast.makeText(this,"Playing next song\n" + songQueueNames.get(currentSongIndex),Toast.LENGTH_SHORT);
+			messageToast.show();
+			songPlayer.start();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    void playPreviousSong()
+    {
+    	if (currentSongIndex == 0)
+    		currentSongIndex = songQueue.size()-1;
+    	else
+    		currentSongIndex = currentSongIndex - 1;
+    	try {
+			songPlayer.setDataSource(this,songQueue.get(currentSongIndex));
+			songPlayer.prepare();
+			messageToast.cancel();
+			messageToast = Toast.makeText(this,"Playing previous Song\n" + songQueue.get(currentSongIndex), Toast.LENGTH_SHORT);
+			messageToast.show();
+			songPlayer.start();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    void pauseThePlayer()
+    {
+    	if (songPlayer.isPlaying())
+    	{
+    		songPlayer.pause();
+    		messageToast.cancel();
+    		messageToast = Toast.makeText(this,"Paused the song playback",Toast.LENGTH_SHORT);
+    		messageToast.show();
+    	}
+    	else
+    	{
+    		songPlayer.start();
+    		messageToast.cancel();
+    		messageToast = Toast.makeText(this,"Resumed playback",Toast.LENGTH_SHORT);
+    		messageToast.show();
+    	}
+    }
+    
     private void loadFileSystem()
     {
     	
