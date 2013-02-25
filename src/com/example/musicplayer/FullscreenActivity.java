@@ -228,7 +228,7 @@ public class FullscreenActivity extends Activity {
         tap1Down = -1;
         tap2Up = -1;
         tap2Down = -1;
-        tapTimeLimit = (long) 1500;
+        tapTimeLimit = (long) 1000;
         songPlayer = new MediaPlayer();
         playPauseButton = (Button) findViewById(R.id.playSongButton);
         previousSongButton = (Button) findViewById(R.id.previousSongButton);
