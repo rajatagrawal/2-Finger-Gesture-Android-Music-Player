@@ -22,6 +22,7 @@ public class albumListLayout extends Activity{
 	Button backButton;
 	ArrayAdapter<String> albumListData;
 	ArrayList<String>albumNames;
+	Activity activity;
 	
 	
 	/*public albumListLayout(Context context) {
@@ -44,6 +45,7 @@ public class albumListLayout extends Activity{
 		setContentView(R.layout.album_layout);
 		System.out.println("In child activity");
 		albumListView = (ListView)findViewById(R.id.albumList1);
+		activity = this;
 		backButton = (Button) findViewById(R.id.backButtonAlbum);
 		albumNames = new ArrayList<String>();
 		if (albumListView == null || backButton == null)
@@ -63,6 +65,10 @@ public class albumListLayout extends Activity{
 				// TODO Auto-generated method stub
 				//System.out.println("The item clicked is " + arg2);
 				System.out.println("The selected item is "+ albumListView.getAdapter().getItem(arg2));
+				Intent childIntent = new Intent(activity,albumListing.class);
+				childIntent.putExtra("albumName", albumListView.getAdapter().getItem(arg2).toString());
+				activity.startActivityForResult(childIntent, 1);
+			
 			}
 			
 		});
@@ -90,6 +96,16 @@ public class albumListLayout extends Activity{
 		albumListViews.setTop(this.getTop());
 		albumListViews.setBottom(this.backButton.getTop());
 		*/
+	}
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent)
+	{
+		System.out.println("Returned to one of the parent activities");
+		if (intent.getStringExtra("songName") != null)
+		{
+			setResult(1,intent);
+			finish();
+		}
 	}
 	public void setupButtonLayout()
 	{

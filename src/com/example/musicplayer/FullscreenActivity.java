@@ -596,6 +596,8 @@ public class FullscreenActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
     	System.out.println("Activity just returned to the parent activity");
+    	System.out.println("The album selected is " + data.getStringExtra("albumName"));
+    	System.out.println("The selected song is " + data.getStringExtra("songName"));
     }
     
     @Override
