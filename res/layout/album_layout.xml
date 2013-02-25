@@ -1,0 +1,31 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/albumScreenLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/background1"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/backButtonAlbum"
+        android:layout_width="121dp"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:text="Button"
+        android:textColor="@color/white" />
+
+    <ListView
+        android:id="@+id/albumList1"
+        android:layout_width="match_parent"
+        android:layout_height="318dp"
+        android:layout_weight="1.01"
+        android:background="@color/transparent"
+        android:cacheColorHint="@color/zeroColor"
+        android:clickable="false"
+        android:divider="@color/transparent"
+        android:drawSelectorOnTop="false"
+        android:headerDividersEnabled="true"
+        android:overScrollHeader="@id/backButtonAlbum" >
+
+    </ListView>
+
+</LinearLayout>

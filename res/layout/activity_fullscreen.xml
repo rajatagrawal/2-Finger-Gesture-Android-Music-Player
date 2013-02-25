@@ -1,0 +1,121 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/background1"
+    android:orientation="vertical"
+    android:showDividers="beginning|middle|end" >
+    
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.01"
+        android:orientation="horizontal" >
+
+        <com.example.musicplayer.albumButton
+            android:id="@+id/albumButton"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.33"
+            android:background="@color/transparent"
+            android:text="Album"
+            android:textColor="@color/white" />
+
+    <Button
+        android:id="@+id/artistButton"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="left|fill_horizontal"
+        android:layout_weight="0.33"
+        android:background="@color/transparent"
+        android:text="Artist"
+        android:textColor="@color/white"
+        android:height="30px" >
+
+</Button>
+
+    <Button
+        android:id="@+id/songsButton"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="left|fill_horizontal"
+        android:layout_weight="0.33"
+        android:background="@color/transparent"
+        android:text="Songs"
+        android:textColor="@color/white" >
+
+</Button>
+     
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.7"
+        android:background="@color/transparent" >
+
+        <ImageView
+            android:id="@+id/songArt"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:src="@color/transparent" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.005"
+        android:orientation="vertical" >
+
+        <SeekBar
+            android:id="@+id/seekBar1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.33"
+            android:alpha="0.5"
+            android:maxHeight="@dimen/barSize"
+            android:minHeight="@dimen/barSize"
+            android:scrollbarStyle="outsideInset" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|left|fill_vertical|fill_horizontal"
+            android:layout_weight="0.7" >
+
+            <Button
+                android:id="@+id/previousSongButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="left|fill_vertical|fill_horizontal"
+                android:layout_weight="0.33"
+                android:background="@color/transparent"
+                android:text="Previous"
+                android:textColor="@color/white" />
+
+            <Button
+                android:id="@+id/playSongButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="left|fill_vertical|fill_horizontal"
+                android:layout_weight="0.33"
+                android:background="@color/transparent"
+                android:text="Play/Pause"
+                android:textColor="@color/white"
+                android:height="30px" />
+
+            <Button
+                android:id="@+id/nextSongButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="left|fill_vertical|fill_horizontal"
+                android:layout_weight="0.33"
+                android:background="@color/transparent"
+                android:text="Next"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
