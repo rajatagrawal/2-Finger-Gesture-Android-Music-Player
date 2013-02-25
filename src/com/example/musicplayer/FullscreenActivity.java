@@ -1,11 +1,13 @@
 package com.example.musicplayer;
 
 import java.io.File;
+import java.io.IOException;
 
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,6 +16,7 @@ import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.example.musicplayer.util.SystemUiHider;
@@ -73,6 +76,10 @@ public class FullscreenActivity extends Activity {
     long tap1Up,tap1Down;
     long tap2Up,tap2Down;
     long tapTimeLimit;
+    MediaPlayer songPlayer;
+    Button playPauseButton;
+    Button previousSongButton;
+    Button nextSongButton;
     OnGestureListener flingGesture = new OnGestureListener()
     {
 	    @Override
@@ -215,6 +222,23 @@ public class FullscreenActivity extends Activity {
         tap2Up = -1;
         tap2Down = -1;
         tapTimeLimit = (long) 1500;
+        songPlayer = new MediaPlayer();
+        playPauseButton = (Button) findViewById(R.id.playSongButton);
+        previousSongButton = (Button) findViewById(R.id.previousSongButton);
+        nextSongButton = (Button) findViewById(R.id.nextSongButton);
+        
+        
+        playPauseButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				System.out.println("Play pause button clicked");
+				if (songPlayer.isPlaying())
+					songPlayer.stop();
+				
+			}
+		});
         
         System.out.println("The current time is " + System.currentTimeMillis());
         
@@ -262,9 +286,11 @@ public class FullscreenActivity extends Activity {
 				{
 					if (event.getActionMasked() == MotionEvent.ACTION_MOVE)
 					{
+						System.out.println("In action move");
 						
 						if (tap1Down !=-1)
 						{
+							System.out.println("in tapping");
 							if ((System.currentTimeMillis() - tap1Down) < tapTimeLimit)
 								return true;
 							else if (tap1Up == -1)
@@ -334,6 +360,7 @@ public class FullscreenActivity extends Activity {
 							{
 								if (event.getX() >= previousX)
 								{
+									System.out.println("SWIPING RIGHT");
 									swipingRight = true;
 									//System.out.println("Did i enter this loop");
 									if (swipingLeft == true)
@@ -364,6 +391,7 @@ public class FullscreenActivity extends Activity {
 								}
 								else if (event.getX() < previousX)
 								{
+									System.out.println("SWIPING LEFT");
 									swipingLeft = true;
 									//System.out.println(" did try to swipe left once");
 									if (swipingRight == true)
@@ -598,6 +626,47 @@ public class FullscreenActivity extends Activity {
     	System.out.println("Activity just returned to the parent activity");
     	System.out.println("The album selected is " + data.getStringExtra("albumName"));
     	System.out.println("The selected song is " + data.getStringExtra("songName"));
+    	ContentResolver contentResolver = this.getContentResolver();
+    	Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+    	String [] projection=
+    		{
+    			MediaStore.Audio.Media._ID,
+    			MediaStore.Audio.Media.DATA,
+    			MediaStore.Audio.Media.ALBUM,
+    			MediaStore.Audio.Media.TITLE
+    		};
+    	String selection = MediaStore.Audio.Media.IS_MUSIC + "!=0 " + "AND " + MediaStore.Audio.Media.ALBUM + " LIKE ? " + " AND " + MediaStore.Audio.Media.TITLE + " LIKE ?";
+    	String [] arguments = {
+    			data.getStringExtra("albumName"),
+    			data.getStringExtra("songName")
+    	};
+    	Cursor cursor = contentResolver.query(uri,projection, selection, arguments,MediaStore.Audio.Media.TITLE);
+    	if (cursor == null)
+    		System.out.println("There is an error getting the song");
+    	else if (cursor.getCount() == 0)
+    		System.out.println("The song is not found in the library");
+    	else
+    	{
+    		cursor.moveToNext();
+    		try {
+				songPlayer.setDataSource(this,Uri.parse(cursor.getString(1)));
+				songPlayer.prepare();
+				songPlayer.start();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalStateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		System.out.println("Finished setting up the source");
+    	}
     }
     
     @Override

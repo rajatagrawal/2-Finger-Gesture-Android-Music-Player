@@ -57,7 +57,7 @@ public class albumButton extends Button {
 	private void loadFileSystem()
     {
     	ContentResolver contentResolver = activity.getContentResolver();
-    	Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+    	Uri uri = Uri.withAppendedPath(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,"Beatles - All I've Gotta Do");
     	String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0 ";
     	String [] projection = 
     		{

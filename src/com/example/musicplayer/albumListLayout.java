@@ -101,9 +101,12 @@ public class albumListLayout extends Activity{
 	protected void onActivityResult(int requestCode, int resultCode, Intent intent)
 	{
 		System.out.println("Returned to one of the parent activities");
-		if (intent.getStringExtra("songName") != null)
+		if (resultCode == Activity.RESULT_CANCELED && requestCode == 1)
+			return;
+		else if (resultCode == Activity.RESULT_OK && requestCode == 1) 
 		{
-			setResult(1,intent);
+			setResult(Activity.RESULT_OK,intent);
+			System.out.println("The results are in the intent : " + intent.getStringExtra("albumName").toString() + " and song name is " + intent.getStringExtra("songName").toString());
 			finish();
 		}
 	}
@@ -131,18 +134,21 @@ public class albumListLayout extends Activity{
     {
     	ContentResolver contentResolver = this.getContentResolver();
     	Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+    	//Uri uri = Uri.withAppendedPath(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,"Beatles - All I've Gotta Do");
     	String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0 ";
     	String [] projection = 
     		{
     			MediaStore.Audio.Media._ID,
-    			MediaStore.Audio.Media.ALBUM
+    			MediaStore.Audio.Media.ALBUM,
+    			MediaStore.Audio.Media.MIME_TYPE,
+    			MediaStore.Audio.Media.DATA
     		};
     	String [] columnProjection = 
     		{
     			MediaStore.Audio.Media.ALBUM
     		};
     	int [] to = new int [] {R.id.albumName};
-    	System.out.println("The uri is "+uri.getEncodedPath());
+    	System.out.println("The changed uri is "+ uri.getEncodedPath());
     	Cursor cursor = contentResolver.query(uri,projection,selection,null,MediaStore.Audio.Media.ALBUM);
     	if (cursor == null)
     	{
@@ -163,15 +169,26 @@ public class albumListLayout extends Activity{
     			System.out.println("Album List data is null");
     		if (cursor == null)
     			System.out.println("Cursor is null");
-    		for (int i=0;i<cursor.getColumnCount();i++)
-    			System.out.println("The columns of cursor are " + cursor.getColumnName(i) + " adn the index is " + i);
-    		cursor.moveToNext();
-    		albumListData.add(cursor.getString(1));
+    		//cursor.moveToNext();
+    		//cursor.moveToPosition(1);
+    		/*while(cursor.moveToNext());
+    		{
+    			System.out.println("The file name is " + cursor.getString(3) + " and the mime type is " + cursor.getString(2));
+    			//cursor.moveToNext();
+    		}
+    		cursor.moveToPosition(-1);*/
+    		//cursor.moveToNext();
+    		//System.out.println("position after initial movement is " + cursor.getPosition());
+    		//albumListData.add(cursor.getString(1));
     		while(cursor.moveToNext())
     		{
     			System.out.println(" Current position is " + cursor.getPosition());
-    			if (cursor.getString(1).equalsIgnoreCase(albumNames.get(albumNames.size()-1)) == false)
+    			if (albumNames.size() == 0)
     				albumListData.add(cursor.getString(1));
+    			else if (cursor.getString(1).equalsIgnoreCase(albumNames.get(albumNames.size()-1)) == false)
+    			{
+    				albumListData.add(cursor.getString(1));
+    			}
     		}
     		for (int j=0;j<albumNames.size();j++)
     		System.out.println("Array is " + albumNames.get(j));
