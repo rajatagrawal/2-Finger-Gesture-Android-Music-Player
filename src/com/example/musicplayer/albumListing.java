@@ -33,7 +33,7 @@ public class albumListing extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.album_layout);
-		albumSongs = (ListView)findViewById(R.id.albumList1);
+		//albumSongs = (ListView)findViewById(R.id.albumList1);
 		backButton = (Button) findViewById(R.id.backButtonAlbum);
 		activity = this;
 		songNames = new ArrayList<String>();

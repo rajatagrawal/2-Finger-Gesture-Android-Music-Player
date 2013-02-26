@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/background1"
+    android:background="@drawable/backgroundgreen"
     android:orientation="vertical"
     android:showDividers="beginning|middle|end" >
     
@@ -27,9 +27,9 @@
         android:layout_gravity="left|fill_horizontal"
         android:layout_weight="0.33"
         android:background="@color/transparent"
+        android:height="30px"
         android:text="Artist"
-        android:textColor="@color/white"
-        android:height="30px" >
+        android:textColor="@color/white" >
 
 </Button>
 
@@ -91,7 +91,7 @@
                 android:layout_weight="0.33"
                 android:background="@color/transparent"
                 android:text="Previous"
-                android:textColor="@color/white" />
+                android:textColor="@color/black_overlay" />
 
             <Button
                 android:id="@+id/playSongButton"
@@ -100,9 +100,9 @@
                 android:layout_gravity="left|fill_vertical|fill_horizontal"
                 android:layout_weight="0.33"
                 android:background="@color/transparent"
+                android:height="30px"
                 android:text="Play/Pause"
-                android:textColor="@color/white"
-                android:height="30px" />
+                android:textColor="@color/black_overlay" />
 
             <Button
                 android:id="@+id/nextSongButton"
@@ -112,7 +112,7 @@
                 android:layout_weight="0.33"
                 android:background="@color/transparent"
                 android:text="Next"
-                android:textColor="@color/white" />
+                android:textColor="@color/black_overlay" />
 
         </LinearLayout>
 

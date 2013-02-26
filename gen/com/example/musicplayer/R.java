@@ -32,16 +32,20 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     public static final class drawable {
         public static final int background=0x7f020000;
         public static final int background1=0x7f020001;
-        public static final int ic_launcher=0x7f020002;
+        public static final int background_texture=0x7f020002;
+        public static final int backgroundgreen=0x7f020003;
+        public static final int backgroundsimple=0x7f020004;
+        public static final int blue_background=0x7f020005;
+        public static final int colouredwallpaper=0x7f020006;
+        public static final int ic_launcher=0x7f020007;
     }
     public static final class id {
         public static final int albumButton=0x7f080000;
-        public static final int albumList1=0x7f08000b;
-        public static final int albumName=0x7f08000c;
+        public static final int albumList1=0x7f08000a;
+        public static final int albumName=0x7f08000b;
         public static final int albumScreenLayout=0x7f080008;
         public static final int artistButton=0x7f080001;
         public static final int backButtonAlbum=0x7f080009;
-        public static final int imageView1=0x7f08000a;
         public static final int nextSongButton=0x7f080007;
         public static final int playSongButton=0x7f080006;
         public static final int previousSongButton=0x7f080005;

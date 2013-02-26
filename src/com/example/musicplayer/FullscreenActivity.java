@@ -464,6 +464,23 @@ public class FullscreenActivity extends Activity {
 						
 						if (tap1Down !=-1)
 						{
+							System.out.println("The difference in x is " + Math.abs(event.getX() - previousX) + " and difference in y is " + Math.abs(event.getY() - previousY));
+							if (Math.abs(event.getX() - previousX) > 5 || Math.abs(event.getY() - previousY) > 3)
+							{
+								tap1Down = -1;
+								tap1Up = -1;
+								tap2Up = -1;
+								tap2Down = -1;
+								previousX = event.getX();
+								previousY = event.getY();
+								return true;
+								
+							}
+							else
+							{
+								previousX = event.getX();
+								previousY = event.getY();
+							}
 							System.out.println("in tapping");
 							if ((System.currentTimeMillis() - tap1Down) < tapTimeLimit)
 								return true;
@@ -539,11 +556,16 @@ public class FullscreenActivity extends Activity {
 									//System.out.println("Did i enter this loop");
 									if (swipingLeft == true)
 									{
+										System.out.println("Swiping right but coming in swiping left");
 										//System.out.println("Swiping left was sometime true");
 										if ((Math.abs(event.getX() - initialX)/(System.currentTimeMillis() - initialTime))>swipePixels)
 										{
-											System.out.println("Swiped Left 1");
-											playPreviousSong();
+											System.out.println("The time difference in reverse swiping is " + (System.currentTimeMillis() - initialTime));
+											if (System.currentTimeMillis() - initialTime >150)
+											{
+												System.out.println("GESTURE : SWIPED LEFT 1");
+												playPreviousSong();
+											}
 										}
 										initialX = event.getX();
 										initialY = event.getY();
@@ -571,10 +593,14 @@ public class FullscreenActivity extends Activity {
 									//System.out.println(" did try to swipe left once");
 									if (swipingRight == true)
 									{
-										if ((Math.abs(event.getX()-initialX)/(System.currentTimeMillis()-initialTime)) > swipePixels)
+										System.out.println("The threshold when reverse swiping is " + (Math.abs(event.getX()-initialX)/(System.currentTimeMillis()-initialTime)));
+										if ((Math.abs(event.getX()-initialX)/(System.currentTimeMillis()-initialTime)) > (swipePixels*120))
 										{
-											System.out.println("Swiped Right 1");
-											playNextSong();
+											System.out.println("The time difference is " + (System.currentTimeMillis() - initialTime));
+											if (System.currentTimeMillis() - initialTime > 150)
+											{	System.out.println("GESTURE : SWIPED RIGHT 1");
+												playNextSong();
+											}
 										}
 										initialX = event.getX();
 										initialY = event.getY();
@@ -605,15 +631,18 @@ public class FullscreenActivity extends Activity {
 							{
 								if (Math.abs(event.getX() - initialX)/(System.currentTimeMillis() - initialTime)>swipePixels)
 								{
-									if (swipingRight == true)
+									if ((System.currentTimeMillis() - initialTime) > 150)
 									{
-										playNextSong();
-										System.out.println("Swiped Right 2");
-									}
-									if (swipingLeft == true)
-									{
-										System.out.println("Swiped Left 2");
-										playPreviousSong();
+										if (swipingRight == true)
+										{
+											playNextSong();
+											System.out.println("GESTURE Swiped Right 2");
+										}
+										if (swipingLeft == true)
+										{
+											System.out.println("GESTURE Left 2");
+											playPreviousSong();
+										}
 									}
 								}
 								swiping = false;
@@ -695,18 +724,18 @@ public class FullscreenActivity extends Activity {
 						}
 						if (swiping == true)
 						{
-							System.out.println("Finished swiping with fastness is " + Math.abs(event.getX() - initialX)/(System.currentTimeMillis() - initialTime) + " and threshold is " + swipePixels);
-							if (Math.abs(event.getX() - initialX)/(System.currentTimeMillis() - initialTime) > swipePixels)
+							System.out.println("Finished swiping with fastness is " + Math.abs(event.getX() - initialX)/(float)(System.currentTimeMillis() - initialTime) + " and threshold is " + swipePixels);
+							if (Math.abs(event.getX() - initialX)/(float)(System.currentTimeMillis() - initialTime) > swipePixels)
 							{
 								//System.out.println("came inside if and swiping right is "+ swipingRight + " and swiping left is " + swipingLeft);
 								if (swipingRight == true)
 								{
-									System.out.println("Swiping Right 3");
+									System.out.println("GESTURE Swiping Right 3");
 									playNextSong();
 								}
 								else if (swipingLeft == true)
 								{
-									System.out.println("Swiping Left 3");
+									System.out.println("GESTURE Swiping Left 3");
 									playPreviousSong();
 								}
 							}
@@ -969,8 +998,9 @@ public class FullscreenActivity extends Activity {
     }*/
     void playNextSong()
     {
-    	currentSongIndex = (currentSongIndex + 1)%songQueue.size();
-    	songPlayer.reset();
+    	System.out.println("Playing next song");
+    	//currentSongIndex = (currentSongIndex + 1)%songQueue.size();
+    	/*songPlayer.reset();
     	try {
 			songPlayer.setDataSource(this,songQueue.get(currentSongIndex));
 			songPlayer.prepare();
@@ -990,14 +1020,17 @@ public class FullscreenActivity extends Activity {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
     }
     void playPreviousSong()
     {
+    	System.out.println("Playing previous song");
+    	/*
     	if (currentSongIndex == 0)
     		currentSongIndex = songQueue.size()-1;
     	else
-    		currentSongIndex = currentSongIndex - 1;
+    		currentSongIndex = currentSongIndex - 1;*/
+    	/*
     	try {
 			songPlayer.setDataSource(this,songQueue.get(currentSongIndex));
 			songPlayer.prepare();
@@ -1017,10 +1050,12 @@ public class FullscreenActivity extends Activity {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
     }
     void pauseThePlayer()
     {
+    	System.out.println("Pausing the song");
+    	/*
     	if (songPlayer.isPlaying())
     	{
     		songPlayer.pause();
@@ -1034,7 +1069,7 @@ public class FullscreenActivity extends Activity {
     		messageToast.cancel();
     		messageToast = Toast.makeText(this,"Resumed playback",Toast.LENGTH_SHORT);
     		messageToast.show();
-    	}
+    	}*/
     }
     
     private void loadFileSystem()

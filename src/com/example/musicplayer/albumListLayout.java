@@ -49,6 +49,8 @@ public class albumListLayout extends Activity{
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.album_layout);
+		
+		
 		System.out.println("In child activity");
 		albumListView = (ListView)findViewById(R.id.albumList1);
 		activity = this;
@@ -187,9 +189,9 @@ public class albumListLayout extends Activity{
     		//cursor.moveToNext();
     		//System.out.println("position after initial movement is " + cursor.getPosition());
     		//albumListData.add(cursor.getString(1));
-    		Uri basicUri = Uri.parse("content://media/external/audio/albumart");
-    		Uri albumArtUri;
-    		Bitmap artwork = null;
+    		//Uri basicUri = Uri.parse("content://media/external/audio/albumart");
+    		//Uri albumArtUri;
+    		//Bitmap artwork = null;
     		while(cursor.moveToNext())
     		{
     			//System.out.println(" Current position is " + cursor.getPosition());
@@ -199,7 +201,7 @@ public class albumListLayout extends Activity{
     			{
     				albumListData.add(cursor.getString(1));
     			}
-    			albumArtUri = ContentUris.withAppendedId(basicUri,cursor.getLong(4));
+    			/*albumArtUri = ContentUris.withAppendedId(basicUri,cursor.getLong(4));
     			InputStream inputStream = null;
 				try {
 					inputStream = contentResolver.openInputStream(albumArtUri);
@@ -209,12 +211,12 @@ public class albumListLayout extends Activity{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-    			artwork = BitmapFactory.decodeStream(inputStream);
+    			artwork = BitmapFactory.decodeStream(inputStream);*/
     			
     			
     		}
-    		ImageView imageView  = (ImageView)findViewById(R.id.imageView1);
-    		imageView.setImageBitmap(artwork);
+    		//ImageView imageView  = (ImageView)findViewById(R.id.imageView1);
+    		//imageView.setImageBitmap(artwork);
     		//for (int j=0;j<albumNames.size();j++)
     		//System.out.println("Array is " + albumNames.get(j));
     		if (albumListData == null)

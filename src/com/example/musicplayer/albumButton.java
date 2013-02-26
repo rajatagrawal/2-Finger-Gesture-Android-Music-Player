@@ -90,7 +90,7 @@ public class albumButton extends Button {
     		if (albumListView == null)
     		{
     			System.out.println("album list view is null");
-    			albumListView = (ListView) findViewById(R.id.albumList1);
+    			//albumListView = (ListView) findViewById(R.id.albumList1);
     			System.out.println("after assigning list view");
     		}
     		//albumListView.setAdapter(albumListData);
