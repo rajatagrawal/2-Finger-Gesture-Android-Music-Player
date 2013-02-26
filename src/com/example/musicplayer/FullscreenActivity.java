@@ -32,7 +32,7 @@ import com.example.musicplayer.util.SystemUiHider;
  *
  * @see SystemUiHider
  */
-public class FullscreenActivity extends Activity {
+public class FullScreenActivity extends Activity {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -97,6 +97,13 @@ public class FullscreenActivity extends Activity {
     int minVolume;
     int maxVolume;
     int initialSeekBarPosition;
+    int reverseRightCounter;
+    int reverseLeftCounter;
+    int reverseSwipeLimit;
+    String previousDirection;
+    int horizontalMovementCounter,verticalMovementCounter;
+    String ss_previousDirection,ss_currentDirection;
+    int ss_movementLimit;
     OnGestureListener flingGesture = new OnGestureListener()
     {
 	    @Override
@@ -239,6 +246,13 @@ public class FullscreenActivity extends Activity {
         tap2Up = -1;
         tap2Down = -1;
         tapTimeLimit = (long) 1000;
+        reverseRightCounter = 0;
+        reverseLeftCounter = 0;
+        reverseSwipeLimit = 4;
+        previousDirection = null;
+        horizontalMovementCounter = verticalMovementCounter = 0;
+        ss_previousDirection = ss_currentDirection = null;
+        ss_movementLimit = 3;
         songPlayer = new MediaPlayer();
         songPlayer.reset();
         playPauseButton = (Button) findViewById(R.id.playSongButton);
@@ -460,7 +474,7 @@ public class FullscreenActivity extends Activity {
 				{
 					if (event.getActionMasked() == MotionEvent.ACTION_MOVE)
 					{
-						System.out.println("In action move");
+						System.out.println("In action move and swiping left = " + swipingLeft + " and swiping Right is " + swipingRight);
 						
 						if (tap1Down !=-1)
 						{
@@ -523,58 +537,72 @@ public class FullscreenActivity extends Activity {
 						//System.out.println("Coming in moving");
 						if (Math.abs(event.getX() - previousX)>= Math.abs(event.getY() - previousY))
 						{
-							swiping = true;
-							//System.out.println("X movement is greater");
-							if (scrolling == true)
+							
+							if (ss_currentDirection == null)
+								ss_currentDirection = "horizontal";
+							
+							if (ss_previousDirection == null)
+								ss_previousDirection = "horizontal";
+							if (ss_previousDirection.equals("vertical"))
+								verticalMovementCounter = 0;
+							ss_previousDirection = "horizontal";
+							
+							if (ss_currentDirection == "vertical")
 							{
-								swiping = true;
-								if (event.getX()>= previousX)
+								horizontalMovementCounter++;
+								if (horizontalMovementCounter<=ss_movementLimit)
 								{
-									swipingRight = true;
-								
-									swipingLeft = false;
+									previousX = event.getX();
+									previousY = event.getY();
+									return true;
 								}
 								else
 								{
-									swipingLeft = true;
-									swipingRight = false;
+									ss_currentDirection = "horizontal";
+									horizontalMovementCounter = 0;
+									verticalMovementCounter = 0;
+									initialX = previousX = event.getX();
+									initialY = previousY = event.getY();
+									initialTime = System.currentTimeMillis();
 								}
-								scrolling = false;
-								initialX = event.getX();
-								initialY = event.getY();
-								previousX = event.getX();
-								previousY = event.getY();
-								initialTime = System.currentTimeMillis();
-								return true;
 							}
-							if (swiping == true)
+							else if (ss_currentDirection == "horizontal")
 							{
 								if (event.getX() >= previousX)
 								{
-									System.out.println("SWIPING RIGHT");
+									System.out.println("SWIPING RIGHT and previous direction was " + previousDirection);
 									swipingRight = true;
+									if (previousDirection == null)
+										previousDirection = "right";
+									if (previousDirection.equals("left"))
+										reverseLeftCounter = 0;
+									previousDirection = "right";
 									//System.out.println("Did i enter this loop");
 									if (swipingLeft == true)
 									{
-										System.out.println("Swiping right but coming in swiping left");
-										//System.out.println("Swiping left was sometime true");
-										if ((Math.abs(event.getX() - initialX)/(System.currentTimeMillis() - initialTime))>swipePixels)
+										
+										reverseRightCounter++;
+										if (reverseRightCounter <= reverseSwipeLimit)
 										{
-											System.out.println("The time difference in reverse swiping is " + (System.currentTimeMillis() - initialTime));
-											if (System.currentTimeMillis() - initialTime >150)
-											{
-												System.out.println("GESTURE : SWIPED LEFT 1");
-												playPreviousSong();
-											}
+											swipingRight = false;
+											swipingLeft = true;
+											previousX = event.getX();
+											previousY = event.getY();
+											return true;
 										}
-										initialX = event.getX();
-										initialY = event.getY();
-										previousX = event.getX();
-										previousY = event.getY();
-										initialTime = System.currentTimeMillis();
-										swipingLeft = false;
-										swipingRight = true;
-										return true;
+										else if (reverseRightCounter > reverseSwipeLimit)
+										{
+											swipingRight = true;
+											swipingLeft = false;
+											reverseRightCounter = 0;
+											reverseLeftCounter = 0;
+											initialX = event.getX();
+											initialY = event.getY();
+											previousX = event.getX();
+											previousY = event.getY();
+											initialTime = System.currentTimeMillis();
+											return true;
+										}
 									}
 									if (swipingRight == true)
 									{
@@ -588,28 +616,39 @@ public class FullscreenActivity extends Activity {
 								}
 								else if (event.getX() < previousX)
 								{
-									System.out.println("SWIPING LEFT");
+									System.out.println("SWIPING LEFT and previous direction was " + previousDirection);
 									swipingLeft = true;
+									if (previousDirection == null)
+										previousDirection = "left";
+									if (previousDirection.equals("right"))
+										reverseRightCounter = 0;
+									previousDirection = "left";
 									//System.out.println(" did try to swipe left once");
 									if (swipingRight == true)
 									{
-										System.out.println("The threshold when reverse swiping is " + (Math.abs(event.getX()-initialX)/(System.currentTimeMillis()-initialTime)));
-										if ((Math.abs(event.getX()-initialX)/(System.currentTimeMillis()-initialTime)) > (swipePixels*120))
+										reverseLeftCounter++;
+										if (reverseLeftCounter <= reverseSwipeLimit)
 										{
-											System.out.println("The time difference is " + (System.currentTimeMillis() - initialTime));
-											if (System.currentTimeMillis() - initialTime > 150)
-											{	System.out.println("GESTURE : SWIPED RIGHT 1");
-												playNextSong();
-											}
+											swipingRight = true;
+											swipingLeft = false;
+											previousX = event.getX();
+											previousY = event.getY();
+											return true;
 										}
-										initialX = event.getX();
-										initialY = event.getY();
-										previousX = event.getX();
-										previousY = event.getY();
-										initialTime = System.currentTimeMillis();
-										swipingRight = false;
-										swipingLeft = true;
-										return true;
+										else if (reverseLeftCounter>reverseSwipeLimit)
+										{
+											swipingLeft = true;
+											swipingRight = false;
+											reverseRightCounter = 0;
+											reverseLeftCounter = 0;
+											initialX = event.getX();
+											initialY = event.getY();
+											previousX = event.getX();
+											previousY = event.getY();
+											initialTime = System.currentTimeMillis();
+											return true;
+										
+										}
 									}
 									else if (swipingLeft == true)
 									{
@@ -626,41 +665,42 @@ public class FullscreenActivity extends Activity {
 						else if (Math.abs(event.getX() - previousX) < Math.abs(event.getY() - previousY))
 						{
 							//System.out.println("Also did scrolling before quitting");
-							scrolling = true;
-							if (swiping == true)
+							
+							if (ss_currentDirection == null)
+								ss_currentDirection = "vertical";
+							
+							if (ss_previousDirection == null)
+								ss_previousDirection = "vertical";
+							if (ss_previousDirection.equals("horizontal"))
+								horizontalMovementCounter = 0;
+							ss_previousDirection = "vertical";
+							
+							if (ss_currentDirection.equals("horizontal"))
 							{
-								if (Math.abs(event.getX() - initialX)/(System.currentTimeMillis() - initialTime)>swipePixels)
+								verticalMovementCounter++;
+								if (verticalMovementCounter <=ss_movementLimit)
 								{
-									if ((System.currentTimeMillis() - initialTime) > 150)
-									{
-										if (swipingRight == true)
-										{
-											playNextSong();
-											System.out.println("GESTURE Swiped Right 2");
-										}
-										if (swipingLeft == true)
-										{
-											System.out.println("GESTURE Left 2");
-											playPreviousSong();
-										}
-									}
+									previousX = event.getX();
+									previousY = event.getY();
+									verticalMovementCounter++;
+									return true;
 								}
-								swiping = false;
-								swipingLeft = false;
-								swipingRight = false;
-								scrolling = true;
-								initialX = event.getX();
-								initialY = event.getY();
-								previousX = event.getX();
-								previousY = event.getY();
-								initialTime = System.currentTimeMillis();
-								return true;
+								else
+								{
+									ss_currentDirection = "vertical";
+									horizontalMovementCounter = 0;
+									verticalMovementCounter = 0;
+									initialX = previousX = event.getX();
+									initialY = previousY = event.getY();
+									initialTime = System.currentTimeMillis();
+								}
+									
 							}
-							if (scrolling == true)
+							else if (ss_currentDirection.equals("vertical"))
 							{
 								if (event.getY()>= previousY)
 								{
-									System.out.println("Scrolling Down");
+									System.out.println("GESTURE : Scrolling Down");
 									int currentProgress = volumeControl.getProgress();
 									volumeControl.setProgress(currentProgress-1);
 									double volumeToSet = ((volumeControl.getProgress())/(float)seekBarMax) *maxVolume;
@@ -670,7 +710,7 @@ public class FullscreenActivity extends Activity {
 								}
 								else if (event.getY() < previousY)
 								{
-									System.out.println("Scrolling Up");
+									System.out.println("GESTURE : Scrolling Up");
 									int currentProgress = volumeControl.getProgress();
 									volumeControl.setProgress(currentProgress+1);
 									double volumeToSet = ((volumeControl.getProgress())/(float)seekBarMax) *maxVolume;
@@ -687,6 +727,12 @@ public class FullscreenActivity extends Activity {
 					else if (event.getActionMasked() == MotionEvent.ACTION_POINTER_UP)
 					{
 						System.out.println("Second Finger lifted up from the screen");
+						reverseRightCounter = 0;
+						reverseLeftCounter = 0;
+						previousDirection = null;
+						horizontalMovementCounter = 0;
+						verticalMovementCounter = 0;
+						ss_previousDirection = null;
 						if (tap1Down !=-1 && tap2Down == -1)
 						{
 							System.out.println("The time difference is " + (System.currentTimeMillis() - tap1Down));
@@ -705,7 +751,7 @@ public class FullscreenActivity extends Activity {
 						{
 							if ((System.currentTimeMillis() - tap2Down) < tapTimeLimit)
 							{
-								System.out.println("Double Tap Detected");
+								System.out.println("GESTURE : Double Tap Detected");
 								pauseThePlayer();
 								tap1Up = -1;
 								tap1Down = -1;
@@ -722,13 +768,18 @@ public class FullscreenActivity extends Activity {
 							}
 								
 						}
-						if (swiping == true)
+						if (ss_currentDirection!= null && ss_currentDirection.equals("horizontal"))
 						{
 							System.out.println("Finished swiping with fastness is " + Math.abs(event.getX() - initialX)/(float)(System.currentTimeMillis() - initialTime) + " and threshold is " + swipePixels);
 							if (Math.abs(event.getX() - initialX)/(float)(System.currentTimeMillis() - initialTime) > swipePixels)
 							{
+								
+								if (event.getX() >= initialX)
+									System.out.println("GESTURE Swiped Right");
+								else
+									System.out.println("GESTURE Swiped Left");
 								//System.out.println("came inside if and swiping right is "+ swipingRight + " and swiping left is " + swipingLeft);
-								if (swipingRight == true)
+								/*if (swipingRight == true)
 								{
 									System.out.println("GESTURE Swiping Right 3");
 									playNextSong();
@@ -737,7 +788,7 @@ public class FullscreenActivity extends Activity {
 								{
 									System.out.println("GESTURE Swiping Left 3");
 									playPreviousSong();
-								}
+								}*/
 							}
 							//System.out.println("Didn't come inside if");
 							return true;
@@ -769,6 +820,15 @@ public class FullscreenActivity extends Activity {
 						swipingLeft = false;
 						swipingRight = false;
 						initialTime = System.currentTimeMillis();
+						
+						reverseRightCounter = 0;
+						reverseLeftCounter = 0;
+						previousDirection = null;
+						
+						ss_currentDirection = null;
+						ss_previousDirection = null;
+						horizontalMovementCounter = 0;
+						verticalMovementCounter = 0;
 						return true;
 					}
 					
