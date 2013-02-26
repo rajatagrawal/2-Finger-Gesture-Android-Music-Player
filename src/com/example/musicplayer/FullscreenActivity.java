@@ -230,7 +230,7 @@ public class FullscreenActivity extends Activity {
         initialX = initialY = finalX = finalY = 0;
         previousX = previousY = 0;
         swiping = scrolling = false;
-        swipePixels = (float) 0.2;
+        swipePixels = (float) 0.15;
         swipingRight = false;
         swipingLeft = false;
         cancelEvent = false;
