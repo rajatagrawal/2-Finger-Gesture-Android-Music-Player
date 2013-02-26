@@ -695,7 +695,7 @@ public class FullscreenActivity extends Activity {
 						}
 						if (swiping == true)
 						{
-							System.out.println("swiping when lifted finger up and threshold is " + Math.abs(event.getX() - initialX)/(System.currentTimeMillis() - initialTime));
+							System.out.println("Finished swiping with fastness is " + Math.abs(event.getX() - initialX)/(System.currentTimeMillis() - initialTime) + " and threshold is " + swipePixels);
 							if (Math.abs(event.getX() - initialX)/(System.currentTimeMillis() - initialTime) > swipePixels)
 							{
 								//System.out.println("came inside if and swiping right is "+ swipingRight + " and swiping left is " + swipingLeft);
