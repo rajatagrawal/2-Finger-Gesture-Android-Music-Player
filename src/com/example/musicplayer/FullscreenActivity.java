@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +20,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
 
 import com.example.musicplayer.util.SystemUiHider;
@@ -87,6 +90,13 @@ public class FullscreenActivity extends Activity {
     String currentSong;
     int currentSongIndex;
     Toast messageToast;
+    SeekBar volumeControl;
+    AudioManager audioManager;
+    int seekBarMin;
+    int seekBarMax;
+    int minVolume;
+    int maxVolume;
+    int initialSeekBarPosition;
     OnGestureListener flingGesture = new OnGestureListener()
     {
 	    @Override
@@ -230,6 +240,7 @@ public class FullscreenActivity extends Activity {
         tap2Down = -1;
         tapTimeLimit = (long) 1000;
         songPlayer = new MediaPlayer();
+        songPlayer.reset();
         playPauseButton = (Button) findViewById(R.id.playSongButton);
         previousSongButton = (Button) findViewById(R.id.previousSongButton);
         nextSongButton = (Button) findViewById(R.id.nextSongButton);
@@ -237,6 +248,46 @@ public class FullscreenActivity extends Activity {
         songQueueNames = new ArrayList<String>();
         currentSongIndex = -1;
         currentSong = null;
+        audioManager = (AudioManager) this.getSystemService(AUDIO_SERVICE);
+        volumeControl = (SeekBar) findViewById(R.id.seekBar1);
+        maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        minVolume = 0;
+        seekBarMin = 0;
+        seekBarMax = volumeControl.getMax();
+        this.setInitialProgressBar();
+        volumeControl.setOnSeekBarChangeListener(new OnSeekBarChangeListener()
+        {
+
+			@Override
+			public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar arg0) {
+				// TODO Auto-generated method stub
+				
+				initialSeekBarPosition = volumeControl.getProgress();
+				
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar arg0) {
+				// TODO Auto-generated method stub
+				
+					int differenceInProgressBar = volumeControl.getProgress() - initialSeekBarPosition;
+					System.out.println("The maximum seek bar value is " + seekBarMax);
+					System.out.println("The current volume is " + audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+					double volumeToSet = ((differenceInProgressBar/(float)seekBarMax)*maxVolume)+audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+					audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,(int)(volumeToSet),AudioManager.FLAG_VIBRATE);
+					messageToast.cancel();
+					messageToast = Toast.makeText(activity,"Volume in increasing to set is " + audioManager.getStreamVolume(AudioManager.STREAM_MUSIC),Toast.LENGTH_SHORT);
+					messageToast.show();
+				
+			}
+        	
+        });
         
         
         playPauseButton.setOnClickListener(new View.OnClickListener() {
@@ -756,6 +807,11 @@ public class FullscreenActivity extends Activity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         //findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+    }
+    public void setInitialProgressBar()
+    {
+    	int initialVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+    	volumeControl.setProgress((int)((initialVolume/(float)maxVolume)*seekBarMax));
     }
     
     @Override
