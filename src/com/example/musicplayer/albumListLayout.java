@@ -123,7 +123,7 @@ public class albumListLayout extends Activity{
 				System.out.println("on click for back button");
 				Intent returnIntent = new Intent();
 				returnIntent.putExtra("data1", "hi");
-				setResult(1,returnIntent);
+				setResult(Activity.RESULT_CANCELED);;
 				finish();
 				
 			}
@@ -182,7 +182,7 @@ public class albumListLayout extends Activity{
     		//albumListData.add(cursor.getString(1));
     		while(cursor.moveToNext())
     		{
-    			System.out.println(" Current position is " + cursor.getPosition());
+    			//System.out.println(" Current position is " + cursor.getPosition());
     			if (albumNames.size() == 0)
     				albumListData.add(cursor.getString(1));
     			else if (cursor.getString(1).equalsIgnoreCase(albumNames.get(albumNames.size()-1)) == false)
@@ -190,8 +190,8 @@ public class albumListLayout extends Activity{
     				albumListData.add(cursor.getString(1));
     			}
     		}
-    		for (int j=0;j<albumNames.size();j++)
-    		System.out.println("Array is " + albumNames.get(j));
+    		//for (int j=0;j<albumNames.size();j++)
+    		//System.out.println("Array is " + albumNames.get(j));
     		if (albumListData == null)
     			System.out.println("album list data is null");
     		albumListView.setAdapter(albumListData);

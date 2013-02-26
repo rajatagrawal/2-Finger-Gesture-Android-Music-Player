@@ -261,6 +261,8 @@ public class FullscreenActivity extends Activity {
 			@Override
 			public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
 				// TODO Auto-generated method stub
+				double volumeToSet = ((arg1/(float)seekBarMax)*maxVolume);
+				audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,(int)(volumeToSet),AudioManager.FLAG_VIBRATE);
 				
 			}
 
@@ -276,14 +278,12 @@ public class FullscreenActivity extends Activity {
 			public void onStopTrackingTouch(SeekBar arg0) {
 				// TODO Auto-generated method stub
 				
-					int differenceInProgressBar = volumeControl.getProgress() - initialSeekBarPosition;
-					System.out.println("The maximum seek bar value is " + seekBarMax);
-					System.out.println("The current volume is " + audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
-					double volumeToSet = ((differenceInProgressBar/(float)seekBarMax)*maxVolume)+audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-					audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,(int)(volumeToSet),AudioManager.FLAG_VIBRATE);
-					messageToast.cancel();
-					messageToast = Toast.makeText(activity,"Volume in increasing to set is " + audioManager.getStreamVolume(AudioManager.STREAM_MUSIC),Toast.LENGTH_SHORT);
-					messageToast.show();
+				messageToast.cancel();
+				messageToast = Toast.makeText(activity,"Volume in increasing to set is " + audioManager.getStreamVolume(AudioManager.STREAM_MUSIC),Toast.LENGTH_SHORT);
+				messageToast.show();
+				
+				
+					
 				
 			}
         	
@@ -630,9 +630,23 @@ public class FullscreenActivity extends Activity {
 							if (scrolling == true)
 							{
 								if (event.getY()>= previousY)
+								{
 									System.out.println("Scrolling Down");
+									int currentProgress = volumeControl.getProgress();
+									volumeControl.setProgress(currentProgress-1);
+									double volumeToSet = ((volumeControl.getProgress())/(float)seekBarMax) *maxVolume;
+									audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,(int) volumeToSet,AudioManager.FLAG_VIBRATE);
+									//audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,AudioManager.ADJUST_LOWER,AudioManager.FLAG_VIBRATE);
+									//setInitialProgressBar();
+								}
 								else if (event.getY() < previousY)
+								{
 									System.out.println("Scrolling Up");
+									int currentProgress = volumeControl.getProgress();
+									volumeControl.setProgress(currentProgress+1);
+									double volumeToSet = ((volumeControl.getProgress())/(float)seekBarMax) *maxVolume;
+									audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,(int) volumeToSet,AudioManager.FLAG_VIBRATE);
+								}
 								previousX = event.getX();
 								previousY = event.getY();
 								return true;
@@ -817,6 +831,8 @@ public class FullscreenActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
+    	if (resultCode == Activity.RESULT_CANCELED && requestCode == 1)
+    		return;
     	System.out.println("Activity just returned to the parent activity");
     	System.out.println("The album selected is " + data.getStringExtra("albumName"));
     	System.out.println("The selected song is " + data.getStringExtra("songName"));
@@ -846,8 +862,9 @@ public class FullscreenActivity extends Activity {
     		this.songQueueNames.clear();
     		for (int i=0;i<cursor.getCount();i++)
     		{
-    			if (cursor.getString(3).equalsIgnoreCase(data.getStringExtra("songName")) );
+    			if (cursor.getString(3).equalsIgnoreCase(data.getStringExtra("songName")) )
     			{
+    				System.out.println("Came in if");
     				currentSongIndex = i;
     				currentSong = cursor.getString(3);
     			}
@@ -855,6 +872,7 @@ public class FullscreenActivity extends Activity {
     			songQueueNames.add(cursor.getString(3));
     			cursor.moveToNext();
     		}
+    		System.out.println("The current song index is " + currentSongIndex + " and the name of the song is " + currentSong);
     		if (songQueue.size() == 0)
     		{
     			messageToast.cancel();
