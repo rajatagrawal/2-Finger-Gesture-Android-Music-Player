@@ -1,11 +1,16 @@
 package com.example.musicplayer;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -14,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 public class albumListLayout extends Activity{
@@ -141,7 +147,8 @@ public class albumListLayout extends Activity{
     			MediaStore.Audio.Media._ID,
     			MediaStore.Audio.Media.ALBUM,
     			MediaStore.Audio.Media.MIME_TYPE,
-    			MediaStore.Audio.Media.DATA
+    			MediaStore.Audio.Media.DATA,
+    			MediaStore.Audio.Media.ALBUM_ID
     		};
     	String [] columnProjection = 
     		{
@@ -180,6 +187,9 @@ public class albumListLayout extends Activity{
     		//cursor.moveToNext();
     		//System.out.println("position after initial movement is " + cursor.getPosition());
     		//albumListData.add(cursor.getString(1));
+    		Uri basicUri = Uri.parse("content://media/external/audio/albumart");
+    		Uri albumArtUri;
+    		Bitmap artwork = null;
     		while(cursor.moveToNext())
     		{
     			//System.out.println(" Current position is " + cursor.getPosition());
@@ -189,7 +199,22 @@ public class albumListLayout extends Activity{
     			{
     				albumListData.add(cursor.getString(1));
     			}
+    			albumArtUri = ContentUris.withAppendedId(basicUri,cursor.getLong(4));
+    			InputStream inputStream = null;
+				try {
+					inputStream = contentResolver.openInputStream(albumArtUri);
+					System.out.println("Opened the album art");
+					break;
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    			artwork = BitmapFactory.decodeStream(inputStream);
+    			
+    			
     		}
+    		ImageView imageView  = (ImageView)findViewById(R.id.imageView1);
+    		imageView.setImageBitmap(artwork);
     		//for (int j=0;j<albumNames.size();j++)
     		//System.out.println("Array is " + albumNames.get(j));
     		if (albumListData == null)

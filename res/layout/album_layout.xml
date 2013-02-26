@@ -13,6 +13,12 @@
         android:text="Button"
         android:textColor="@color/white" />
 
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_launcher" />
+
     <ListView
         android:id="@+id/albumList1"
         android:layout_width="match_parent"
