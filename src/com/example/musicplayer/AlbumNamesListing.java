@@ -56,7 +56,7 @@ public class AlbumNamesListing extends Activity{
 					long arg3) {
 				// TODO Auto-generated method stub
 				Log.d("AlbumNamesListing","The selected item is "+ albumListView.getAdapter().getItem(arg2));
-				Intent childIntent = new Intent(activity,albumListing.class);
+				Intent childIntent = new Intent(activity,SingleAlbumListing.class);
 				childIntent.putExtra("albumName", albumListView.getAdapter().getItem(arg2).toString());
 				activity.startActivityForResult(childIntent, 1);
 			
@@ -86,8 +86,6 @@ public class AlbumNamesListing extends Activity{
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Log.d("AlbumNamesListing","on click for back button");
-				Intent returnIntent = new Intent();
-				returnIntent.putExtra("data1", "hi");
 				setResult(Activity.RESULT_CANCELED);;
 				finish();
 				
@@ -103,16 +101,8 @@ public class AlbumNamesListing extends Activity{
     	String [] projection = 
     		{
     			MediaStore.Audio.Media._ID,
-    			MediaStore.Audio.Media.ALBUM,
-    			MediaStore.Audio.Media.MIME_TYPE,
-    			MediaStore.Audio.Media.DATA,
-    			MediaStore.Audio.Media.ALBUM_ID
-    		};
-    	String [] columnProjection = 
-    		{
     			MediaStore.Audio.Media.ALBUM
     		};
-    	int [] to = new int [] {R.id.albumName};
     	Log.d("AlbumNamesListing","The changed uri is "+ uri.getEncodedPath());
     	Cursor cursor = contentResolver.query(uri,projection,selection,null,MediaStore.Audio.Media.ALBUM);
     	if (cursor == null)
@@ -126,62 +116,34 @@ public class AlbumNamesListing extends Activity{
     	else if (cursor.getCount() == 0)
     	{
     		Log.d("AlbumNamesListing","There are no music files present in the library!");
+    		messageToast.cancel();
+    		messageToast = Toast.makeText(activity,"There are no songs present in the music library",Toast.LENGTH_SHORT);
+    		messageToast.show();
+    		return;
     	}
     	else
     	{
-    		Log.d("AlbumNamesListing","in else");
-    		if (albumNames == null)
-    			Log.d("AlbumNamesListing","album names is null");
+    		Log.d("AlbumNamesListing","Music files present in the music library");
     		albumListDataAdapter = new ArrayAdapter<String>(this,R.layout.album_name_view,R.id.albumName,albumNames);
     		if (albumListDataAdapter == null)
-    			Log.d("AlbumNamesListing","Album List data is null");
-    		if (cursor == null)
-    			Log.d("AlbumNamesListing","Cursor is null");
-    		//cursor.moveToNext();
-    		//cursor.moveToPosition(1);
-    		/*while(cursor.moveToNext());
     		{
-    			Log.d("AlbumNamesListing","The file name is " + cursor.getString(3) + " and the mime type is " + cursor.getString(2));
-    			//cursor.moveToNext();
+    			Log.d("AlbumNamesListing","Album List data is null");
+    			messageToast.cancel();
+    			messageToast = Toast.makeText(activity,"Error reading music files from the music library!",Toast.LENGTH_SHORT);
+    			messageToast.show();
+    			return;
     		}
-    		cursor.moveToPosition(-1);*/
-    		//cursor.moveToNext();
-    		//Log.d("AlbumNamesListing","position after initial movement is " + cursor.getPosition());
-    		//albumListData.add(cursor.getString(1));
-    		//Uri basicUri = Uri.parse("content://media/external/audio/albumart");
-    		//Uri albumArtUri;
-    		//Bitmap artwork = null;
     		while(cursor.moveToNext())
     		{
-    			//Log.d("AlbumNamesListing"," Current position is " + cursor.getPosition());
     			if (albumNames.size() == 0)
     				albumListDataAdapter.add(cursor.getString(1));
     			else if (cursor.getString(1).equalsIgnoreCase(albumNames.get(albumNames.size()-1)) == false)
     			{
     				albumListDataAdapter.add(cursor.getString(1));
     			}
-    			/*albumArtUri = ContentUris.withAppendedId(basicUri,cursor.getLong(4));
-    			InputStream inputStream = null;
-				try {
-					inputStream = contentResolver.openInputStream(albumArtUri);
-					Log.d("AlbumNamesListing","Opened the album art");
-					break;
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-    			artwork = BitmapFactory.decodeStream(inputStream);*/
-    			
-    			
     		}
-    		//ImageView imageView  = (ImageView)findViewById(R.id.imageView1);
-    		//imageView.setImageBitmap(artwork);
-    		//for (int j=0;j<albumNames.size();j++)
-    		//Log.d("AlbumNamesListing","Array is " + albumNames.get(j));
-    		if (albumListDataAdapter == null)
-    			Log.d("AlbumNamesListing","album list data is null");
     		albumListView.setAdapter(albumListDataAdapter);
-    		Log.d("AlbumNamesListing","Number of rows are " + cursor.getCount() + " and column is " + cursor.getColumnName(0));
+    		Log.d("AlbumNamesListing","Number of Albums are " + cursor.getCount());
     	}
     }
 }

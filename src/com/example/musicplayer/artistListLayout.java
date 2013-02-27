@@ -73,7 +73,7 @@ public class artistListLayout extends Activity{
 				// TODO Auto-generated method stub
 				//System.out.println("The item clicked is " + arg2);
 				System.out.println("The selected item is "+ albumListView.getAdapter().getItem(arg2));
-				Intent childIntent = new Intent(activity,albumListing.class);
+				Intent childIntent = new Intent(activity,SingleAlbumListing.class);
 				childIntent.putExtra("albumName", albumListView.getAdapter().getItem(arg2).toString());
 				activity.startActivityForResult(childIntent, 1);
 				System.out.println("After starting activity");
