@@ -11,7 +11,7 @@
         android:layout_weight="0.01"
         android:orientation="horizontal" >
 
-        <com.example.musicplayer.albumButton
+        <com.example.musicplayer.AlbumButton
             android:id="@+id/albumButton"
             android:layout_width="match_parent"
             android:layout_height="40px"

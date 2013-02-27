@@ -1,13 +1,19 @@
 package com.example.musicplayer;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -85,6 +91,8 @@ public class FullScreenActivity extends Activity {
     Button playPauseButton;
     Button previousSongButton;
     Button nextSongButton;
+    AlbumButton albumButton;
+    SongButton songButton;
     ArrayList <Uri> songQueue;
     ArrayList <String> songQueueNames;
     String currentSong;
@@ -228,6 +236,13 @@ public class FullScreenActivity extends Activity {
 		}
     };
     @Override
+    protected void onDestroy()
+    {
+    	super.onDestroy();
+    	songPlayer.reset();
+    	songPlayer.release();
+    }
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
     	
     	
@@ -358,6 +373,23 @@ public class FullScreenActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				
+				System.out.println("Play pause button clicked");
+				try
+				{
+					if (songPlayer.isPlaying())
+						songPlayer.pause();
+					else
+						songPlayer.start();
+				}
+				catch(NullPointerException e)
+				{
+					System.out.println("The media player hasn't been initialized yet");
+				}
+				finally
+				{
+					System.out.println("Please make a selection");
+				}
+				
 			}
 		};
         volumeControl.setOnSeekBarChangeListener(new OnSeekBarChangeListener()
@@ -395,7 +427,9 @@ public class FullScreenActivity extends Activity {
         });
         
         
-        playPauseButton.setOnClickListener(new View.OnClickListener() {
+        
+        playPauseButton.setOnClickListener(this.playPauseListener);
+        /*playPauseButton.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -418,9 +452,10 @@ public class FullScreenActivity extends Activity {
 				}
 				
 			}
-		});
+		});*/
         
-        previousSongButton.setOnClickListener(new View.OnClickListener() {
+        previousSongButton.setOnClickListener(this.previousSongListener);
+        /*previousSongButton.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -463,9 +498,10 @@ public class FullScreenActivity extends Activity {
 				
 				
 			}
-		});
+		});*/
         
-        nextSongButton.setOnClickListener(new View.OnClickListener() {
+        nextSongButton.setOnClickListener(this.nextSongListener);
+        /*nextSongButton.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -501,7 +537,7 @@ public class FullScreenActivity extends Activity {
 					e.printStackTrace();
 				}
 			}
-		});
+		});*/
         
         songPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 			
@@ -550,8 +586,11 @@ public class FullScreenActivity extends Activity {
         
         System.out.println("The current time is " + System.currentTimeMillis());
         
-        albumButton albumButton = (albumButton) findViewById(R.id.albumButton);
+        albumButton = (AlbumButton) findViewById(R.id.albumButton);
         albumButton.setParentActivity(this);
+        
+        songButton = (SongButton) findViewById(R.id.songsButton);
+        songButton.setParentActivity(this);
         songImage = (ImageView) findViewById(R.id.songArt);
         if (songImage == null)
         	System.out.println("Song Image is null");
@@ -1046,24 +1085,28 @@ public class FullScreenActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-    	if (resultCode == Activity.RESULT_CANCELED && requestCode == 1)
+    	if (resultCode == Activity.RESULT_CANCELED && (requestCode == 1 || requestCode == 2))
     		return;
     	System.out.println("Activity just returned to the parent activity");
     	System.out.println("The album selected is " + data.getStringExtra("albumName"));
     	System.out.println("The selected song is " + data.getStringExtra("songName"));
     	ContentResolver contentResolver = this.getContentResolver();
     	Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+    	Uri albumArtBasicUri = Uri.parse("content://media/external/audio/albumart");
     	String [] projection=
     		{
     			MediaStore.Audio.Media._ID,
     			MediaStore.Audio.Media.DATA,
     			MediaStore.Audio.Media.ALBUM,
-    			MediaStore.Audio.Media.TITLE
+    			MediaStore.Audio.Media.TITLE,
+    			MediaStore.Audio.Media.ALBUM_ID
     		};
     	String selection = MediaStore.Audio.Media.IS_MUSIC + "!=0 " + "AND " + MediaStore.Audio.Media.ALBUM + " LIKE ?";
     	String [] arguments = {
     			data.getStringExtra("albumName")
     	};
+    	Uri albumArtUri;
+    	//albumArtUri = ContentUris.withAppendedId(albumArtBasicUri,data.getLongArrayExtra("albumName"));
     	Cursor cursor = contentResolver.query(uri,projection, selection, arguments,MediaStore.Audio.Media.TITLE);
     	System.out.println("After doing the cursor in the first activity");
     	if (cursor == null)
@@ -1075,6 +1118,25 @@ public class FullScreenActivity extends Activity {
     		cursor.moveToNext();
     		songQueue.clear();
     		this.songQueueNames.clear();
+    		albumArtUri = ContentUris.withAppendedId(albumArtBasicUri,cursor.getLong(4));
+    		InputStream songArtStream = null;
+			try {
+				songArtStream = contentResolver.openInputStream(albumArtUri);
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			if (songArtStream != null)
+			{
+					Bitmap songArtBitmap = BitmapFactory.decodeStream(songArtStream);
+					this.songImage.setImageBitmap(songArtBitmap);
+			}
+			else
+			{
+				this.songImage.setImageBitmap(null);
+				this.songImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.background1));
+			}
+    		
     		for (int i=0;i<cursor.getCount();i++)
     		{
     			if (cursor.getString(3).equalsIgnoreCase(data.getStringExtra("songName")) )
@@ -1212,6 +1274,7 @@ public class FullScreenActivity extends Activity {
     void playPreviousSong()
     {
     	System.out.println("Playing previous song");
+    	this.previousSongListener.onClick(null);
     	/*if (currentSongIndex == 0)
     		currentSongIndex = songQueue.size()-1;
     	else
@@ -1241,6 +1304,7 @@ public class FullScreenActivity extends Activity {
     void pauseThePlayer()
     {
     	System.out.println("Pausing the song");
+    	this.playPauseListener.onClick(null);
     	/*
     	if (songPlayer.isPlaying())
     	{

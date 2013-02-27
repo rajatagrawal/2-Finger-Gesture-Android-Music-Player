@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.musicplayer.albumListLayout"
+            android:name="com.example.musicplayer.AlbumNamesListing"
             android:label="@string/app_name"
             android:configChanges="orientation|keyboardHidden|screenSize"
             ></activity>

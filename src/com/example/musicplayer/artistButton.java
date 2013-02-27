@@ -23,7 +23,7 @@ public class artistButton extends Button {
 	ListView albumListView;
 	Button backButton;
 	LinearLayout albumLayout;
-	albumListLayout album_list_layout;
+	AlbumNamesListing album_list_layout;
 
 	public artistButton(Context context) {
 		super(context);
