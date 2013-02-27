@@ -104,6 +104,9 @@ public class FullScreenActivity extends Activity {
     int horizontalMovementCounter,verticalMovementCounter;
     String ss_previousDirection,ss_currentDirection;
     int ss_movementLimit;
+    View.OnClickListener nextSongListener;
+    View.OnClickListener previousSongListener;
+    View.OnClickListener playPauseListener;
     OnGestureListener flingGesture = new OnGestureListener()
     {
 	    @Override
@@ -270,6 +273,93 @@ public class FullScreenActivity extends Activity {
         seekBarMax = volumeControl.getMax();
         messageToast = new Toast(this);
         this.setInitialProgressBar();
+        
+        this.nextSongListener = new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				
+				if (songQueue.size() == 0)
+				{
+					messageToast.cancel();
+					messageToast = Toast.makeText(activity,"Please make a selection!", Toast.LENGTH_SHORT);
+					messageToast.show();
+					return;
+				}
+				currentSongIndex = (currentSongIndex + 1)%songQueue.size();
+				songPlayer.reset();
+				try {
+					songPlayer.setDataSource(activity,songQueue.get(currentSongIndex));
+					songPlayer.prepare();
+					messageToast.cancel();
+					messageToast = Toast.makeText(activity,"Playing next song " + songQueueNames.get(currentSongIndex),Toast.LENGTH_SHORT);
+					messageToast.show();
+					songPlayer.start();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalStateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+        
+		this.previousSongListener = new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+			
+				if (songQueue.size() ==0)
+				{
+					messageToast.cancel();
+					messageToast = Toast.makeText(activity,"Please make a song selection!",Toast.LENGTH_SHORT);
+					messageToast.show();
+					return;
+				}
+				if (currentSongIndex ==0)
+					currentSongIndex = songQueue.size()-1;
+				else
+					currentSongIndex = currentSongIndex - 1;
+				songPlayer.reset();
+				try {
+					songPlayer.setDataSource(activity, songQueue.get(currentSongIndex));
+					songPlayer.prepare();
+					messageToast.cancel();
+					messageToast = Toast.makeText(activity,"Playing previous song " + songQueueNames.get(currentSongIndex),Toast.LENGTH_SHORT);
+					messageToast.show();
+					songPlayer.start();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalStateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		this.playPauseListener = new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				
+			}
+		};
         volumeControl.setOnSeekBarChangeListener(new OnSeekBarChangeListener()
         {
 
@@ -805,9 +895,15 @@ public class FullScreenActivity extends Activity {
 							{
 								
 								if (event.getX() >= initialX)
+								{
 									System.out.println("GESTURE Swiped Right");
+									playNextSong();
+								}
 								else
+								{
+									playPreviousSong();
 									System.out.println("GESTURE Swiped Left");
+								}
 								//System.out.println("came inside if and swiping right is "+ swipingRight + " and swiping left is " + swipingLeft);
 								/*if (swipingRight == true)
 								{
@@ -1089,6 +1185,7 @@ public class FullScreenActivity extends Activity {
     void playNextSong()
     {
     	System.out.println("Playing next song");
+    	this.nextSongListener.onClick(null);
     	//currentSongIndex = (currentSongIndex + 1)%songQueue.size();
     	/*songPlayer.reset();
     	try {
@@ -1115,8 +1212,7 @@ public class FullScreenActivity extends Activity {
     void playPreviousSong()
     {
     	System.out.println("Playing previous song");
-    	/*
-    	if (currentSongIndex == 0)
+    	/*if (currentSongIndex == 0)
     		currentSongIndex = songQueue.size()-1;
     	else
     		currentSongIndex = currentSongIndex - 1;*/
