@@ -20,7 +20,7 @@
             android:text="Album"
             android:textColor="@color/white" />
 
-    <Button
+    <com.example.musicplayer.artistButton
         android:id="@+id/artistButton"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -31,9 +31,9 @@
         android:text="Artist"
         android:textColor="@color/white" >
 
-</Button>
+</com.example.musicplayer.artistButton>
 
-    <Button
+    <com.example.musicplayer.SongButton
         android:id="@+id/songsButton"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -43,7 +43,7 @@
         android:text="Songs"
         android:textColor="@color/white" >
 
-</Button>
+</com.example.musicplayer.SongButton>
      
     </LinearLayout>
 

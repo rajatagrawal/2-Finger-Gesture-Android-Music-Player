@@ -21,16 +21,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Toast;
 
-public class albumListLayout extends Activity{
+public class SongListLayout extends Activity{
 
 	ListView albumListView;
 	Button backButton;
 	ArrayAdapter<String> albumListData;
 	ArrayList<String>albumNames;
 	Activity activity;
-	Toast messageToast;
 	
 	
 	/*public albumListLayout(Context context) {
@@ -58,7 +56,6 @@ public class albumListLayout extends Activity{
 		activity = this;
 		backButton = (Button) findViewById(R.id.backButtonAlbum);
 		albumNames = new ArrayList<String>();
-		messageToast = new Toast(this);
 		if (albumListView == null || backButton == null)
 		{
 			System.out.println("There is an error reading the layout structure. Quitting selection of album.");
@@ -164,9 +161,6 @@ public class albumListLayout extends Activity{
     	Cursor cursor = contentResolver.query(uri,projection,selection,null,MediaStore.Audio.Media.ALBUM);
     	if (cursor == null)
     	{
-    		messageToast.cancel();
-    		messageToast = Toast.makeText(activity,"There was an error reading music files from the music library",Toast.LENGTH_SHORT);
-    		messageToast.show();
     		System.out.println("There was an error reading music files from the music library.");
     		return;
     	}

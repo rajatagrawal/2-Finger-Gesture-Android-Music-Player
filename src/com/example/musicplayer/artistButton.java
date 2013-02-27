@@ -14,9 +14,8 @@ import android.widget.CursorAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.Toast;
 
-public class albumButton extends Button {
+public class artistButton extends Button {
 	
 	Activity parentActivity;
 	Activity activity;
@@ -25,19 +24,17 @@ public class albumButton extends Button {
 	Button backButton;
 	LinearLayout albumLayout;
 	albumListLayout album_list_layout;
-	Toast messageToast;
 
-	public albumButton(Context context) {
+	public artistButton(Context context) {
 		super(context);
 		// TODO Auto-generated constructor stub
 	}
 
-	public albumButton(Context context, AttributeSet attrs) {
+	public artistButton(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		System.out.println("Constructor without def style executed");
 		//parentActivity = (Activity)context;
 		this.setOnClickListener(onClickListener);
-		messageToast = new Toast(context);
 		// TODO Auto-generated constructor stub
 	}
 	public void setParentActivity(Activity activity)
@@ -45,7 +42,7 @@ public class albumButton extends Button {
 		this.parentActivity = activity;
 	}
 
-	public albumButton(Context context, AttributeSet attrs, int defStyle) {
+	public artistButton(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		// TODO Auto-generated constructor stub
 	}
@@ -53,15 +50,14 @@ public class albumButton extends Button {
 	{
 		public void onClick(View view)
 		{
-			Intent childIntent = new Intent(parentActivity,albumListLayout.class);
+			Intent childIntent = new Intent(parentActivity,artistListLayout.class);
 			parentActivity.startActivityForResult(childIntent,1);
 		}
 	};
 	private void loadFileSystem()
     {
     	ContentResolver contentResolver = activity.getContentResolver();
-    	//Uri uri = Uri.withAppendedPath(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,"Beatles - All I've Gotta Do");
-    	Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+    	Uri uri = Uri.withAppendedPath(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,"Beatles - All I've Gotta Do");
     	String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0 ";
     	String [] projection = 
     		{
@@ -77,9 +73,6 @@ public class albumButton extends Button {
     	Cursor cursor = contentResolver.query(uri,projection,selection,null,MediaStore.Audio.Media.ALBUM);
     	if (cursor == null)
     	{
-    		messageToast.cancel();
-    		messageToast = Toast.makeText(activity,"There was an error reading music files from the music library",Toast.LENGTH_SHORT);
-    		messageToast.show();
     		System.out.println("There was an error reading music files from the music library.");
     		activity.setContentView(R.layout.album_layout);
     		return;

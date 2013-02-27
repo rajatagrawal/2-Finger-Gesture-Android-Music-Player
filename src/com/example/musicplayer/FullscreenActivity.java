@@ -268,6 +268,7 @@ public class FullScreenActivity extends Activity {
         minVolume = 0;
         seekBarMin = 0;
         seekBarMax = volumeControl.getMax();
+        messageToast = new Toast(this);
         this.setInitialProgressBar();
         volumeControl.setOnSeekBarChangeListener(new OnSeekBarChangeListener()
         {
@@ -310,10 +311,21 @@ public class FullScreenActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				System.out.println("Play pause button clicked");
-				if (songPlayer.isPlaying())
-					songPlayer.pause();
-				else
-					songPlayer.start();
+				try
+				{
+					if (songPlayer.isPlaying())
+						songPlayer.pause();
+					else
+						songPlayer.start();
+				}
+				catch(NullPointerException e)
+				{
+					System.out.println("The media player hasn't been initialized yet");
+				}
+				finally
+				{
+					System.out.println("Please make a selection");
+				}
 				
 			}
 		});
@@ -324,6 +336,15 @@ public class FullScreenActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				System.out.println("Previous button clicked");
+				
+				System.out.println("Current song index is " + currentSongIndex);
+				if (songQueue.size() ==0)
+				{
+					messageToast.cancel();
+					messageToast = Toast.makeText(activity,"Please make a song selection!",Toast.LENGTH_SHORT);
+					messageToast.show();
+					return;
+				}
 				if (currentSongIndex ==0)
 					currentSongIndex = songQueue.size()-1;
 				else
@@ -360,6 +381,13 @@ public class FullScreenActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				System.out.println("Next Button Clicked");
+				if (songQueue.size() == 0)
+				{
+					messageToast.cancel();
+					messageToast = Toast.makeText(activity,"Please make a selection!", Toast.LENGTH_SHORT);
+					messageToast.show();
+					return;
+				}
 				currentSongIndex = (currentSongIndex + 1)%songQueue.size();
 				songPlayer.reset();
 				try {
@@ -421,10 +449,12 @@ public class FullScreenActivity extends Activity {
 			@Override
 			public boolean onError(MediaPlayer mp, int what, int extra) {
 				// TODO Auto-generated method stub
+				
+				System.out.println("Came in the on error listener");
 				messageToast.cancel();
 				messageToast = Toast.makeText(activity,"There is an error with the music player!",Toast.LENGTH_SHORT);
 				messageToast.show();
-				return false;
+				return true;
 			}
 		});
         

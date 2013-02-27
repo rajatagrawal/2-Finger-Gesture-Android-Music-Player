@@ -29,10 +29,26 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             ></activity>
         <activity
+            android:name="com.example.musicplayer.SongListLayout"
+            android:label="@string/app_name"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            ></activity>
+        <activity
+            android:name="com.example.musicplayer.ArtistListLayout"
+            android:label="@string/app_name"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            ></activity>
+        <activity
             android:name="com.example.musicplayer.albumListing"
             android:label="@string/app_name"
             android:configChanges="orientation|keyboardHidden|screenSize">
             </activity>
+           
+        <activity
+            android:name="com.example.musicplayer.artistListing"
+            android:label="@string/app_name"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
     </application>
 
 </manifest>
