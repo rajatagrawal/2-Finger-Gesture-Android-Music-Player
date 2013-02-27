@@ -33,7 +33,9 @@ public class albumListing extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.album_layout);
-		//albumSongs = (ListView)findViewById(R.id.albumList1);
+		System.out.println("started album listing and getting album songs");
+		albumSongs = (ListView)findViewById(R.id.albumList1);
+		System.out.println("after getting list view and is " + albumSongs);
 		backButton = (Button) findViewById(R.id.backButtonAlbum);
 		activity = this;
 		songNames = new ArrayList<String>();
@@ -74,6 +76,7 @@ public class albumListing extends Activity
 			
 		});
 		receivedBundle = getIntent().getExtras();
+		System.out.println("Before receving album name in album listing");
 		albumName = receivedBundle.getString("albumName");
 		System.out.println("The album name received in the child activity is " + albumName);
 		loadFileSystem();

@@ -36,8 +36,9 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int backgroundgreen=0x7f020003;
         public static final int backgroundsimple=0x7f020004;
         public static final int blue_background=0x7f020005;
-        public static final int colouredwallpaper=0x7f020006;
-        public static final int ic_launcher=0x7f020007;
+        public static final int buttonstates=0x7f020006;
+        public static final int colouredwallpaper=0x7f020007;
+        public static final int ic_launcher=0x7f020008;
     }
     public static final class id {
         public static final int albumButton=0x7f080000;

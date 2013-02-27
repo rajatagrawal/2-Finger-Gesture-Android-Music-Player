@@ -76,6 +76,7 @@ public class artistListLayout extends Activity{
 				Intent childIntent = new Intent(activity,albumListing.class);
 				childIntent.putExtra("albumName", albumListView.getAdapter().getItem(arg2).toString());
 				activity.startActivityForResult(childIntent, 1);
+				System.out.println("After starting activity");
 			
 			}
 			

@@ -8,7 +8,7 @@
     <Button
         android:id="@+id/backButtonAlbum"
         android:layout_width="121dp"
-        android:layout_height="wrap_content"
+        android:layout_height="50px"
         android:background="@color/transparent"
         android:text="Back"
         android:textColor="@color/white" >
@@ -17,7 +17,10 @@
     <ListView
         android:id="@+id/albumList1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:cacheColorHint="@color/zeroColor" >
+
     </ListView>
 
 </LinearLayout>

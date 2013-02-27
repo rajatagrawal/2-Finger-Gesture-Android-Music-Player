@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CursorAdapter;
@@ -37,7 +38,18 @@ public class albumButton extends Button {
 		System.out.println("Constructor without def style executed");
 		//parentActivity = (Activity)context;
 		this.setOnClickListener(onClickListener);
+		//this.setBackground(getResources().getDrawable(R.drawable.background));
+		/*this.setOnTouchListener(new View.OnTouchListener() {
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				// TODO Auto-generated method stub
+				v.setBackgroundColor(0x88FFFF00);
+				return false;
+			}
+		});*/
 		messageToast = new Toast(context);
+		//this.setBackgroundResource(context.getResources().getIdentifier("buttonstates","drawable", context.getPackageName()));
 		// TODO Auto-generated constructor stub
 	}
 	public void setParentActivity(Activity activity)
@@ -54,6 +66,7 @@ public class albumButton extends Button {
 		public void onClick(View view)
 		{
 			Intent childIntent = new Intent(parentActivity,albumListLayout.class);
+			view.setBackgroundColor(0x88FFFF00);
 			parentActivity.startActivityForResult(childIntent,1);
 		}
 	};
