@@ -13,13 +13,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
@@ -38,7 +38,7 @@ import com.example.musicplayer.util.SystemUiHider;
  *
  * @see SystemUiHider
  */
-public class FullScreenActivity extends Activity {
+public class MainActivity extends Activity {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -93,7 +93,9 @@ public class FullScreenActivity extends Activity {
     Button nextSongButton;
     AlbumButton albumButton;
     SongButton songButton;
+    ArtistButton artistButton;
     ArrayList <Uri> songQueue;
+    ArrayList <Long> songArtURLs;
     ArrayList <String> songQueueNames;
     String currentSong;
     int currentSongIndex;
@@ -115,34 +117,40 @@ public class FullScreenActivity extends Activity {
     View.OnClickListener nextSongListener;
     View.OnClickListener previousSongListener;
     View.OnClickListener playPauseListener;
+    
+    Uri albumArtParentUri;
+    Uri albumArtUri;
+    InputStream songArtStream;
+    ContentResolver contentResolver;
+    Bitmap songArtBitmap;
     OnGestureListener flingGesture = new OnGestureListener()
     {
 	    @Override
 	    public boolean onDown(MotionEvent e1)
 	    {
-	    	System.out.println("this is a on down event and number of fingers is " + e1.getPointerCount());
-	    	System.out.println("Value of action masked is " + e1.getActionMasked());
+	    	Log.d("MainActivity","this is a on down event and number of fingers is " + e1.getPointerCount());
+	    	Log.d("MainActivity","Value of action masked is " + e1.getActionMasked());
 	    	if (e1.getActionMasked() == MotionEvent.ACTION_MOVE)
-	    		System.out.println(" I am moving my finger after touching");
+	    		Log.d("MainActivity"," I am moving my finger after touching");
 	    	
 	    	return true;
 	    }
 	    @Override
 	    public boolean onFling(MotionEvent e1, MotionEvent e2, float x, float y)
 	    {
-	    	System.out.println("getactionmasked returns in fling : " + e2.getActionMasked());
+	    	Log.d("MainActivity","getactionmasked returns in fling : " + e2.getActionMasked());
 	    	if (e2.getActionMasked() == MotionEvent.ACTION_MOVE)
-	    		System.out.println("I am moving my finger");
-	    	System.out.println("Numbe of fingers in fling is beginning :  " + e1.getPointerCount() + " end : " + e2.getPointerCount());
-	    	System.out.println("The x velocity is " + x + " and the y velocity is " + y);
+	    		Log.d("MainActivity","I am moving my finger");
+	    	Log.d("MainActivity","Numbe of fingers in fling is beginning :  " + e1.getPointerCount() + " end : " + e2.getPointerCount());
+	    	Log.d("MainActivity","The x velocity is " + x + " and the y velocity is " + y);
 	    	
 	    	if (Math.abs(e2.getX() - e1.getX()) > Math.abs(e2.getY() - e1.getY()))
 	    	{
 	    		
 	    		if (x >= 0)
-	    			System.out.println("Right Swipe");
+	    			Log.d("MainActivity","Right Swipe");
 	    		else if (x<=0)
-	    			System.out.println("Left Swipe");
+	    			Log.d("MainActivity","Left Swipe");
 	    		
 	    	}
 	    	else if (Math.abs(e2.getY() - e1.getY()) > Math.abs(e2.getX() - e1.getX()))
@@ -150,65 +158,65 @@ public class FullScreenActivity extends Activity {
 	    		
 	    		if (y >= 0)
 	    		{
-	    			System.out.println("Down Swipe");
+	    			Log.d("MainActivity","Down Swipe");
 	    		}
 	    		else if (y<=0)
-	    			System.out.println("Up Swipe");
+	    			Log.d("MainActivity","Up Swipe");
 	    	}
 	    	/*if (e2.getPointerCount() == 1)
-	    		System.out.println("One finger fling");
+	    		Log.d("MainActivity","One finger fling");
 	    	else if (e2.getPointerCount() == 2)
-	    		System.out.println("Two finger fling");
+	    		Log.d("MainActivity","Two finger fling");
 	    	*/
-	    	//System.out.println("this is a fling gesture");
+	    	//Log.d("MainActivity","this is a fling gesture");
 	    	return true;
 	    }
 	    @Override
 	    public boolean onScroll(MotionEvent e1, MotionEvent e2, float x, float y)
 	    {
 	    	
-	    	System.out.println("Finger count in scoll is " + e1.getPointerCount() + " and second finger count is " + e2.getPointerCount());
+	    	Log.d("MainActivity","Finger count in scoll is " + e1.getPointerCount() + " and second finger count is " + e2.getPointerCount());
 	    	
-	    	//System.out.println("X is " + x + " and y is " + y);
+	    	//Log.d("MainActivity","X is " + x + " and y is " + y);
 	    	if (x >=0 && y >=0)
 	    	{
 	    		if (Math.abs(x)>=Math.abs(y))
-	    			System.out.println("Left Scroll");
+	    			Log.d("MainActivity","Left Scroll");
 	    		else
-	    			System.out.println("Up Scroll");
+	    			Log.d("MainActivity","Up Scroll");
 	    		
 	    		/*
 	    		if ((e2.getX() - e1.getX()) >= 0)
-	    			System.out.println("Right Scroll");
+	    			Log.d("MainActivity","Right Scroll");
 	    		else if ((e2.getX() - e1.getX()) <=0)
-	    			System.out.println("Left Scroll");
+	    			Log.d("MainActivity","Left Scroll");
 	    		*/
 	    		
 	    	}
 	    	else if (x>=0 && y<=0)
 	    	{
 	    		if (Math.abs(x)>=Math.abs(y))
-	    			System.out.println("Left Scroll");
+	    			Log.d("MainActivity","Left Scroll");
 	    		else
-	    			System.out.println("Down Scroll");
+	    			Log.d("MainActivity","Down Scroll");
 	    	}
 	    	else if (x<=0 && y>=0)
 	    	{
 	    		if (Math.abs(x) >= Math.abs(y))
-	    			System.out.println("RightScroll");
+	    			Log.d("MainActivity","RightScroll");
 	    		else
-	    			System.out.println("Up Scroll");
+	    			Log.d("MainActivity","Up Scroll");
 	    	}
 	    	else if (x<=0 && y <=0)
 	    	{
 	    		if (Math.abs(x)>= Math.abs(y))
-	    			System.out.println("Right Scroll");
+	    			Log.d("MainActivity","Right Scroll");
 	    		else
-	    			System.out.println("Down Scroll");
+	    			Log.d("MainActivity","Down Scroll");
 	    	}	    	
 	    	
-	    	//System.out.println("Action masked is " + e2.getActionMasked());
-	    	//System.out.println("Scroll Event and the number of fingers is " + e2.getPointerCount());
+	    	//Log.d("MainActivity","Action masked is " + e2.getActionMasked());
+	    	//Log.d("MainActivity","Scroll Event and the number of fingers is " + e2.getPointerCount());
 	    	return true;
 	    }
 	    /*
@@ -251,7 +259,7 @@ public class FullScreenActivity extends Activity {
         setContentView(R.layout.activity_fullscreen);
         
         activity = this;
-        System.out.println("Hi this is a log statement");
+        Log.d("MainActivity","Hi this is a log statement");
         initialX = initialY = finalX = finalY = 0;
         previousX = previousY = 0;
         swiping = scrolling = false;
@@ -288,6 +296,11 @@ public class FullScreenActivity extends Activity {
         seekBarMax = volumeControl.getMax();
         messageToast = new Toast(this);
         this.setInitialProgressBar();
+        this.albumArtParentUri = Uri.parse("content://media/external/audio/albumart");
+        this.albumArtUri = null;
+        this.songArtStream = null;
+        this.songArtBitmap = null;
+        this.songArtURLs = new ArrayList<Long>();
         
         this.nextSongListener = new View.OnClickListener() {
 			
@@ -305,12 +318,25 @@ public class FullScreenActivity extends Activity {
 				currentSongIndex = (currentSongIndex + 1)%songQueue.size();
 				songPlayer.reset();
 				try {
+					
 					songPlayer.setDataSource(activity,songQueue.get(currentSongIndex));
 					songPlayer.prepare();
 					messageToast.cancel();
 					messageToast = Toast.makeText(activity,"Playing next song " + songQueueNames.get(currentSongIndex),Toast.LENGTH_SHORT);
 					messageToast.show();
 					songPlayer.start();
+					
+					albumArtUri = ContentUris.withAppendedId(albumArtParentUri,songArtURLs.get(currentSongIndex));
+					if (albumArtUri != null)
+						songArtStream = contentResolver.openInputStream(albumArtUri);
+					else
+					{
+						songImage.setImageBitmap(null);
+						songImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.background1));						
+					}
+					songImage.setBackgroundDrawable(null);
+	    			songArtBitmap = BitmapFactory.decodeStream(songArtStream);
+	    			songImage.setImageBitmap(songArtBitmap);
 				} catch (IllegalArgumentException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -320,7 +346,13 @@ public class FullScreenActivity extends Activity {
 				} catch (IllegalStateException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} catch (IOException e) {
+				}
+				catch(FileNotFoundException e)
+				{
+					songImage.setImageBitmap(null);
+    				songImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.background1));
+				}
+				catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -346,12 +378,26 @@ public class FullScreenActivity extends Activity {
 					currentSongIndex = currentSongIndex - 1;
 				songPlayer.reset();
 				try {
+					
 					songPlayer.setDataSource(activity, songQueue.get(currentSongIndex));
 					songPlayer.prepare();
 					messageToast.cancel();
 					messageToast = Toast.makeText(activity,"Playing previous song " + songQueueNames.get(currentSongIndex),Toast.LENGTH_SHORT);
 					messageToast.show();
 					songPlayer.start();
+					
+					albumArtUri = ContentUris.withAppendedId(albumArtParentUri,songArtURLs.get(currentSongIndex));
+					if (albumArtUri != null)
+						songArtStream = contentResolver.openInputStream(albumArtUri);
+					else
+					{
+						songImage.setImageBitmap(null);
+						songImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.background1));						
+					}
+					songImage.setBackgroundDrawable(null);
+	    			songArtBitmap = BitmapFactory.decodeStream(songArtStream);
+	    			songImage.setImageBitmap(songArtBitmap);
+	    			
 				} catch (IllegalArgumentException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -361,10 +407,17 @@ public class FullScreenActivity extends Activity {
 				} catch (IllegalStateException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} catch (IOException e) {
+				}
+				catch (FileNotFoundException e)
+				{
+					songImage.setImageBitmap(null);
+    				songImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.background1));
+				}
+				catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				
 			}
 		};
 		this.playPauseListener = new View.OnClickListener() {
@@ -373,7 +426,7 @@ public class FullScreenActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				
-				System.out.println("Play pause button clicked");
+				Log.d("MainActivity","Play pause button clicked");
 				try
 				{
 					if (songPlayer.isPlaying())
@@ -383,11 +436,11 @@ public class FullScreenActivity extends Activity {
 				}
 				catch(NullPointerException e)
 				{
-					System.out.println("The media player hasn't been initialized yet");
+					Log.d("MainActivity","The media player hasn't been initialized yet");
 				}
 				finally
 				{
-					System.out.println("Please make a selection");
+					Log.d("MainActivity","Please make a selection");
 				}
 				
 			}
@@ -434,7 +487,7 @@ public class FullScreenActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				System.out.println("Play pause button clicked");
+				Log.d("MainActivity","Play pause button clicked");
 				try
 				{
 					if (songPlayer.isPlaying())
@@ -444,11 +497,11 @@ public class FullScreenActivity extends Activity {
 				}
 				catch(NullPointerException e)
 				{
-					System.out.println("The media player hasn't been initialized yet");
+					Log.d("MainActivity","The media player hasn't been initialized yet");
 				}
 				finally
 				{
-					System.out.println("Please make a selection");
+					Log.d("MainActivity","Please make a selection");
 				}
 				
 			}
@@ -460,9 +513,9 @@ public class FullScreenActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				System.out.println("Previous button clicked");
+				Log.d("MainActivity","Previous button clicked");
 				
-				System.out.println("Current song index is " + currentSongIndex);
+				Log.d("MainActivity","Current song index is " + currentSongIndex);
 				if (songQueue.size() ==0)
 				{
 					messageToast.cancel();
@@ -506,7 +559,7 @@ public class FullScreenActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				System.out.println("Next Button Clicked");
+				Log.d("MainActivity","Next Button Clicked");
 				if (songQueue.size() == 0)
 				{
 					messageToast.cancel();
@@ -576,7 +629,7 @@ public class FullScreenActivity extends Activity {
 			public boolean onError(MediaPlayer mp, int what, int extra) {
 				// TODO Auto-generated method stub
 				
-				System.out.println("Came in the on error listener");
+				Log.d("MainActivity","Came in the on error listener");
 				messageToast.cancel();
 				messageToast = Toast.makeText(activity,"There is an error with the music player!",Toast.LENGTH_SHORT);
 				messageToast.show();
@@ -584,18 +637,21 @@ public class FullScreenActivity extends Activity {
 			}
 		});
         
-        System.out.println("The current time is " + System.currentTimeMillis());
+        Log.d("MainActivity","The current time is " + System.currentTimeMillis());
         
         albumButton = (AlbumButton) findViewById(R.id.albumButton);
         albumButton.setParentActivity(this);
         
         songButton = (SongButton) findViewById(R.id.songsButton);
         songButton.setParentActivity(this);
+        
+        artistButton = (ArtistButton) findViewById(R.id.artistButton);
+        artistButton.setParentActivity(this);
         songImage = (ImageView) findViewById(R.id.songArt);
         if (songImage == null)
-        	System.out.println("Song Image is null");
+        	Log.d("MainActivity","Song Image is null");
         else
-        	System.out.println("Song Image is not null");
+        	Log.d("MainActivity","Song Image is not null");
         //albumButton.setOnClickListener(albumButtonClickListener);
         
 
@@ -612,32 +668,32 @@ public class FullScreenActivity extends Activity {
 				
 				if (event.getPointerCount() == 1)
 				{
-					//System.out.println("Two finger touched");
+					//Log.d("MainActivity","Two finger touched");
 					if (event.getActionMasked() == MotionEvent.ACTION_MOVE);
-						//System.out.println("One Finger is moving");
+						//Log.d("MainActivity","One Finger is moving");
 					else if (event.getActionMasked() == MotionEvent.ACTION_DOWN)
-						System.out.println("First finger touched the screen");
+						Log.d("MainActivity","First finger touched the screen");
 					else if (event.getActionMasked() == MotionEvent.ACTION_UP)
 					{
-						System.out.println("The gesture has been finished");
+						Log.d("MainActivity","The gesture has been finished");
 						return false;
 					}
 					
 					/*else if (event.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN)
-						System.out.println("Second finger touched the screen");*/
+						Log.d("MainActivity","Second finger touched the screen");*/
 					return true;
-					//System.out.println(" the value by gesture detector is " + gestureDetector.onTouchEvent(event));
+					//Log.d("MainActivity"," the value by gesture detector is " + gestureDetector.onTouchEvent(event));
 					//return gestureDetector.onTouchEvent(event);
 				}
 				else if (event.getPointerCount() == 2)
 				{
 					if (event.getActionMasked() == MotionEvent.ACTION_MOVE)
 					{
-						System.out.println("In action move and swiping left = " + swipingLeft + " and swiping Right is " + swipingRight);
+						Log.d("MainActivity","In action move and swiping left = " + swipingLeft + " and swiping Right is " + swipingRight);
 						
 						if (tap1Down !=-1)
 						{
-							System.out.println("The difference in x is " + Math.abs(event.getX() - previousX) + " and difference in y is " + Math.abs(event.getY() - previousY));
+							Log.d("MainActivity","The difference in x is " + Math.abs(event.getX() - previousX) + " and difference in y is " + Math.abs(event.getY() - previousY));
 							if (Math.abs(event.getX() - previousX) > 5 || Math.abs(event.getY() - previousY) > 3)
 							{
 								tap1Down = -1;
@@ -654,7 +710,7 @@ public class FullScreenActivity extends Activity {
 								previousX = event.getX();
 								previousY = event.getY();
 							}
-							System.out.println("in tapping");
+							Log.d("MainActivity","in tapping");
 							if ((System.currentTimeMillis() - tap1Down) < tapTimeLimit)
 								return true;
 							else if (tap1Up == -1)
@@ -693,7 +749,7 @@ public class FullScreenActivity extends Activity {
 								}
 							}
 						}
-						//System.out.println("Coming in moving");
+						//Log.d("MainActivity","Coming in moving");
 						if (Math.abs(event.getX() - previousX)>= Math.abs(event.getY() - previousY))
 						{
 							
@@ -729,14 +785,14 @@ public class FullScreenActivity extends Activity {
 							{
 								if (event.getX() >= previousX)
 								{
-									System.out.println("SWIPING RIGHT and previous direction was " + previousDirection);
+									Log.d("MainActivity","SWIPING RIGHT and previous direction was " + previousDirection);
 									swipingRight = true;
 									if (previousDirection == null)
 										previousDirection = "right";
 									if (previousDirection.equals("left"))
 										reverseLeftCounter = 0;
 									previousDirection = "right";
-									//System.out.println("Did i enter this loop");
+									//Log.d("MainActivity","Did i enter this loop");
 									if (swipingLeft == true)
 									{
 										
@@ -765,7 +821,7 @@ public class FullScreenActivity extends Activity {
 									}
 									if (swipingRight == true)
 									{
-										//System.out.println("Always swiping right");
+										//Log.d("MainActivity","Always swiping right");
 										previousX = event.getX();
 										previousY = event.getY();
 										swipingRight = true;
@@ -775,14 +831,14 @@ public class FullScreenActivity extends Activity {
 								}
 								else if (event.getX() < previousX)
 								{
-									System.out.println("SWIPING LEFT and previous direction was " + previousDirection);
+									Log.d("MainActivity","SWIPING LEFT and previous direction was " + previousDirection);
 									swipingLeft = true;
 									if (previousDirection == null)
 										previousDirection = "left";
 									if (previousDirection.equals("right"))
 										reverseRightCounter = 0;
 									previousDirection = "left";
-									//System.out.println(" did try to swipe left once");
+									//Log.d("MainActivity"," did try to swipe left once");
 									if (swipingRight == true)
 									{
 										reverseLeftCounter++;
@@ -823,7 +879,7 @@ public class FullScreenActivity extends Activity {
 						}
 						else if (Math.abs(event.getX() - previousX) < Math.abs(event.getY() - previousY))
 						{
-							//System.out.println("Also did scrolling before quitting");
+							//Log.d("MainActivity","Also did scrolling before quitting");
 							
 							if (ss_currentDirection == null)
 								ss_currentDirection = "vertical";
@@ -859,7 +915,7 @@ public class FullScreenActivity extends Activity {
 							{
 								if (event.getY()>= previousY)
 								{
-									System.out.println("GESTURE : Scrolling Down");
+									Log.d("MainActivity","GESTURE : Scrolling Down");
 									int currentProgress = volumeControl.getProgress();
 									volumeControl.setProgress(currentProgress-1);
 									double volumeToSet = ((volumeControl.getProgress())/(float)seekBarMax) *maxVolume;
@@ -869,7 +925,7 @@ public class FullScreenActivity extends Activity {
 								}
 								else if (event.getY() < previousY)
 								{
-									System.out.println("GESTURE : Scrolling Up");
+									Log.d("MainActivity","GESTURE : Scrolling Up");
 									int currentProgress = volumeControl.getProgress();
 									volumeControl.setProgress(currentProgress+1);
 									double volumeToSet = ((volumeControl.getProgress())/(float)seekBarMax) *maxVolume;
@@ -885,7 +941,7 @@ public class FullScreenActivity extends Activity {
 					}
 					else if (event.getActionMasked() == MotionEvent.ACTION_POINTER_UP)
 					{
-						System.out.println("Second Finger lifted up from the screen");
+						Log.d("MainActivity","Second Finger lifted up from the screen");
 						reverseRightCounter = 0;
 						reverseLeftCounter = 0;
 						previousDirection = null;
@@ -894,7 +950,7 @@ public class FullScreenActivity extends Activity {
 						ss_previousDirection = null;
 						if (tap1Down !=-1 && tap2Down == -1)
 						{
-							System.out.println("The time difference is " + (System.currentTimeMillis() - tap1Down));
+							Log.d("MainActivity","The time difference is " + (System.currentTimeMillis() - tap1Down));
 							if ((System.currentTimeMillis() - tap1Down) < tapTimeLimit)
 								tap1Up = System.currentTimeMillis();
 							else
@@ -910,7 +966,7 @@ public class FullScreenActivity extends Activity {
 						{
 							if ((System.currentTimeMillis() - tap2Down) < tapTimeLimit)
 							{
-								System.out.println("GESTURE : Double Tap Detected");
+								Log.d("MainActivity","GESTURE : Double Tap Detected");
 								pauseThePlayer();
 								tap1Up = -1;
 								tap1Down = -1;
@@ -929,42 +985,42 @@ public class FullScreenActivity extends Activity {
 						}
 						if (ss_currentDirection!= null && ss_currentDirection.equals("horizontal"))
 						{
-							System.out.println("Finished swiping with fastness is " + Math.abs(event.getX() - initialX)/(float)(System.currentTimeMillis() - initialTime) + " and threshold is " + swipePixels);
+							Log.d("MainActivity","Finished swiping with fastness is " + Math.abs(event.getX() - initialX)/(float)(System.currentTimeMillis() - initialTime) + " and threshold is " + swipePixels);
 							if (Math.abs(event.getX() - initialX)/(float)(System.currentTimeMillis() - initialTime) > swipePixels)
 							{
 								
 								if (event.getX() >= initialX)
 								{
-									System.out.println("GESTURE Swiped Right");
+									Log.d("MainActivity","GESTURE Swiped Right");
 									playNextSong();
 								}
 								else
 								{
 									playPreviousSong();
-									System.out.println("GESTURE Swiped Left");
+									Log.d("MainActivity","GESTURE Swiped Left");
 								}
-								//System.out.println("came inside if and swiping right is "+ swipingRight + " and swiping left is " + swipingLeft);
+								//Log.d("MainActivity","came inside if and swiping right is "+ swipingRight + " and swiping left is " + swipingLeft);
 								/*if (swipingRight == true)
 								{
-									System.out.println("GESTURE Swiping Right 3");
+									Log.d("MainActivity","GESTURE Swiping Right 3");
 									playNextSong();
 								}
 								else if (swipingLeft == true)
 								{
-									System.out.println("GESTURE Swiping Left 3");
+									Log.d("MainActivity","GESTURE Swiping Left 3");
 									playPreviousSong();
 								}*/
 							}
-							//System.out.println("Didn't come inside if");
+							//Log.d("MainActivity","Didn't come inside if");
 							return true;
 						}
-						//System.out.println("scrolling when lifted finger up");
+						//Log.d("MainActivity","scrolling when lifted finger up");
 						return true;
 						
 					}
 					else if (event.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN)
 					{
-						System.out.println("Second finger touched the screennnn");
+						Log.d("MainActivity","Second finger touched the screennnn");
 						if (tap1Down == -1)
 							tap1Down = System.currentTimeMillis();
 						else if (tap2Down == -1 && (System.currentTimeMillis() - tap1Up) < (tapTimeLimit/3))
@@ -1056,7 +1112,7 @@ public class FullScreenActivity extends Activity {
                 } else {
                     mSystemUiHider.show();
                 }
-                System.out.println("the main screen is touched");
+                Log.d("MainActivity","the main screen is touched");
             }
         });
         */
@@ -1065,9 +1121,9 @@ public class FullScreenActivity extends Activity {
         	@Override
         	public boolean onTouch(final View view, final MotionEvent me)
         	{
-        		System.out.println("content view touch listener");
+        		Log.d("MainActivity","content view touch listener");
         		boolean valueGesture = gestureDetector.onTouchEvent(me);
-        		System.out.println("the value returned by gesture listener is " + valueGesture);
+        		Log.d("MainActivity","the value returned by gesture listener is " + valueGesture);
         		return valueGesture;
         	}
         });*/
@@ -1085,71 +1141,84 @@ public class FullScreenActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-    	if (resultCode == Activity.RESULT_CANCELED && (requestCode == 1 || requestCode == 2))
+    	if (resultCode == Activity.RESULT_CANCELED && (requestCode == 1 || requestCode == 2 || requestCode == 3))
+    	{
     		return;
-    	System.out.println("Activity just returned to the parent activity");
-    	System.out.println("The album selected is " + data.getStringExtra("albumName"));
-    	System.out.println("The selected song is " + data.getStringExtra("songName"));
-    	ContentResolver contentResolver = this.getContentResolver();
+    	}
+    	
+    	Log.d("MainActivity","Activity just returned to the parent activity");
+    	
+    	if (requestCode == 1 || requestCode == 2)
+    	{
+    		Log.d("MainActivity","The album selected is " + data.getStringExtra("albumName"));
+    		Log.d("MainActivity","The selected song is " + data.getStringExtra("songName"));
+    	}
+    	
+    	contentResolver = this.getContentResolver();
     	Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-    	Uri albumArtBasicUri = Uri.parse("content://media/external/audio/albumart");
+    	albumArtParentUri = Uri.parse("content://media/external/audio/albumart");
     	String [] projection=
     		{
     			MediaStore.Audio.Media._ID,
     			MediaStore.Audio.Media.DATA,
     			MediaStore.Audio.Media.ALBUM,
     			MediaStore.Audio.Media.TITLE,
-    			MediaStore.Audio.Media.ALBUM_ID
+    			MediaStore.Audio.Media.ALBUM_ID,
+    			MediaStore.Audio.Media.ARTIST
     		};
-    	String selection = MediaStore.Audio.Media.IS_MUSIC + "!=0 " + "AND " + MediaStore.Audio.Media.ALBUM + " LIKE ?";
-    	String [] arguments = {
-    			data.getStringExtra("albumName")
-    	};
-    	Uri albumArtUri;
-    	//albumArtUri = ContentUris.withAppendedId(albumArtBasicUri,data.getLongArrayExtra("albumName"));
-    	Cursor cursor = contentResolver.query(uri,projection, selection, arguments,MediaStore.Audio.Media.TITLE);
-    	System.out.println("After doing the cursor in the first activity");
+    	String selection;
+    	Cursor cursor = null;
+    	if (requestCode == 1)
+    	{
+    		selection = MediaStore.Audio.Media.IS_MUSIC + "!=0 ";
+    		cursor = contentResolver.query(uri,projection, selection,null,MediaStore.Audio.Media.TITLE);
+    	}
+    	else if (requestCode == 2)
+    	{
+    		selection = MediaStore.Audio.Media.IS_MUSIC + "!=0 " + "AND " + MediaStore.Audio.Media.ALBUM + " LIKE ?";
+    		String [] arguments = 
+    		{
+    				data.getStringExtra("albumName")
+    		};
+    		cursor = contentResolver.query(uri,projection, selection, arguments,MediaStore.Audio.Media.TITLE);
+    	}
+    	else if (requestCode == 3)
+    	{
+    		selection = MediaStore.Audio.Media.IS_MUSIC + "!=0 " + "AND " + MediaStore.Audio.Media.ARTIST + " LIKE ?";
+    		String [] arguments = 
+    		{
+    				data.getStringExtra("artistName")
+    		};
+    		cursor = contentResolver.query(uri,projection, selection, arguments,MediaStore.Audio.Media.TITLE);
+    	}
+    	Log.d("MainActivity","After doing the cursor in the first activity");
     	if (cursor == null)
-    		System.out.println("There is an error getting the song");
+    		Log.d("MainActivity","There is an error getting the song");
     	else if (cursor.getCount() == 0)
-    		System.out.println("The album songs are not found in the library");
+    		Log.d("MainActivity","The album songs are not found in the library");
     	else
     	{
+    		Log.d("MainActivity", "in else for cursor");
     		cursor.moveToNext();
     		songQueue.clear();
+    		this.songArtURLs.clear();
     		this.songQueueNames.clear();
-    		albumArtUri = ContentUris.withAppendedId(albumArtBasicUri,cursor.getLong(4));
-    		InputStream songArtStream = null;
-			try {
-				songArtStream = contentResolver.openInputStream(albumArtUri);
-			} catch (FileNotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			if (songArtStream != null)
-			{
-					Bitmap songArtBitmap = BitmapFactory.decodeStream(songArtStream);
-					this.songImage.setImageBitmap(songArtBitmap);
-			}
-			else
-			{
-				this.songImage.setImageBitmap(null);
-				this.songImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.background1));
-			}
+    		
     		
     		for (int i=0;i<cursor.getCount();i++)
     		{
     			if (cursor.getString(3).equalsIgnoreCase(data.getStringExtra("songName")) )
     			{
-    				System.out.println("Came in if");
+    				Log.d("MainActivity","Came in if");
     				currentSongIndex = i;
     				currentSong = cursor.getString(3);
     			}
     			songQueue.add(Uri.parse(cursor.getString(1)));
     			songQueueNames.add(cursor.getString(3));
+    			this.songArtURLs.add(cursor.getLong(4));
     			cursor.moveToNext();
     		}
-    		System.out.println("The current song index is " + currentSongIndex + " and the name of the song is " + currentSong);
+    		Log.d("MainActivity","The current song index is " + currentSongIndex + " and the name of the song is " + currentSong);
     		if (songQueue.size() == 0)
     		{
     			messageToast.cancel();
@@ -1158,6 +1227,26 @@ public class FullScreenActivity extends Activity {
     			return;
     		}
     		try {
+    			albumArtUri = ContentUris.withAppendedId(albumArtParentUri,this.songArtURLs.get(currentSongIndex));
+    			if (albumArtUri != null)
+    				songArtStream = contentResolver.openInputStream(albumArtUri);
+    			else
+    			{
+    				this.songImage.setImageBitmap(null);
+    				this.songImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.background1));
+    			}
+    			
+    			if (songArtStream != null)
+    			{
+    					Bitmap songArtBitmap = BitmapFactory.decodeStream(songArtStream);
+    					this.songImage.setImageBitmap(songArtBitmap);
+    			}
+    			else
+    			{
+    				this.songImage.setImageBitmap(null);
+    				this.songImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.background1));
+    			}
+    			
     			songPlayer.reset();
     			songPlayer.setDataSource(this,songQueue.get(currentSongIndex));
 				songPlayer.prepare();
@@ -1186,14 +1275,14 @@ public class FullScreenActivity extends Activity {
     			return;
     			
     		}
-    		System.out.println("Finished setting up the source");
+    		Log.d("MainActivity","Finished setting up the source");
     	}
     }
     
     @Override
     public boolean onTouchEvent(MotionEvent me)
     {
-    	//System.out.println("MAIN SCREEN TOUCHED");
+    	//Log.d("MainActivity","MAIN SCREEN TOUCHED");
     	return true;
     	//return gestureDetector.onTouchEvent(me);
     }
@@ -1221,7 +1310,7 @@ public class FullScreenActivity extends Activity {
             if (AUTO_HIDE) {
                 delayedHide(AUTO_HIDE_DELAY_MILLIS);
             }
-            System.out.println("a button has been pressed" + (counter++));
+            Log.d("MainActivity","a button has been pressed" + (counter++));
             return false;
         }
     };*/
@@ -1246,159 +1335,17 @@ public class FullScreenActivity extends Activity {
     }*/
     void playNextSong()
     {
-    	System.out.println("Playing next song");
+    	Log.d("MainActivity","Playing next song");
     	this.nextSongListener.onClick(null);
-    	//currentSongIndex = (currentSongIndex + 1)%songQueue.size();
-    	/*songPlayer.reset();
-    	try {
-			songPlayer.setDataSource(this,songQueue.get(currentSongIndex));
-			songPlayer.prepare();
-			messageToast.cancel();
-			messageToast = Toast.makeText(this,"Playing next song\n" + songQueueNames.get(currentSongIndex),Toast.LENGTH_SHORT);
-			messageToast.show();
-			songPlayer.start();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
     }
     void playPreviousSong()
     {
-    	System.out.println("Playing previous song");
+    	Log.d("MainActivity","Playing previous song");
     	this.previousSongListener.onClick(null);
-    	/*if (currentSongIndex == 0)
-    		currentSongIndex = songQueue.size()-1;
-    	else
-    		currentSongIndex = currentSongIndex - 1;*/
-    	/*
-    	try {
-			songPlayer.setDataSource(this,songQueue.get(currentSongIndex));
-			songPlayer.prepare();
-			messageToast.cancel();
-			messageToast = Toast.makeText(this,"Playing previous Song\n" + songQueue.get(currentSongIndex), Toast.LENGTH_SHORT);
-			messageToast.show();
-			songPlayer.start();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
     }
     void pauseThePlayer()
     {
-    	System.out.println("Pausing the song");
+    	Log.d("MainActivity","Pausing the song");
     	this.playPauseListener.onClick(null);
-    	/*
-    	if (songPlayer.isPlaying())
-    	{
-    		songPlayer.pause();
-    		messageToast.cancel();
-    		messageToast = Toast.makeText(this,"Paused the song playback",Toast.LENGTH_SHORT);
-    		messageToast.show();
-    	}
-    	else
-    	{
-    		songPlayer.start();
-    		messageToast.cancel();
-    		messageToast = Toast.makeText(this,"Resumed playback",Toast.LENGTH_SHORT);
-    		messageToast.show();
-    	}*/
-    }
-    
-    private void loadFileSystem()
-    {
-    	
-    	System.out.println("reading file system");
-    	String memoryState = Environment.getExternalStorageState();
-    	if (memoryState.equals(Environment.MEDIA_MOUNTED)|| memoryState.equals(Environment.MEDIA_MOUNTED_READ_ONLY))
-    		System.out.println("Media is mounted and can be read");
-    	else
-    	{
-    		System.out.println("cannot read media");
-    		System.out.println(memoryState);
-    	}
-    	
-    	//get the path of the music directory
-    	File musicDirectoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
-    	System.out.println("File path is " + musicDirectoryPath.getPath());
-    	if (!musicDirectoryPath.mkdirs())
-    		System.out.println("The file folder exists");
-    	else
-    		System.out.println("The file folder didn't exist");
-    	
-    	File [] musicFile = musicDirectoryPath.listFiles();
-    	
-    	if (musicFile == null)
-    		System.out.println("music file directory is null");
-    	else
-    	{
-    		System.out.println("the length of music files is " + musicFile.length);
-    	
-	    	if (musicFile.length == 0)
-	    		System.out.println("There are no files in the directory");
-	    	else
-	    	{
-	    		for (int i=0;i<musicFile.length;i++)
-	    	
-	    		{
-	    			System.out.println(musicFile[i].getPath());
-	    		}
-	    	}
-    	}
-    	ContentResolver contentResolver = getContentResolver();
-    	Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-    	//Uri uri = Uri.parse(musicDirectoryPath.getPath());
-    	String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0 ";
-    	String [] projection = 
-    		{
-    			MediaStore.Audio.Media.ARTIST
-    		};
-    	//android.provider.MediaStore.Audio.Media.
-    	System.out.println("The uri is "+uri.getEncodedPath());
-    	Cursor cursor = contentResolver.query(uri,null,selection,null,MediaStore.Audio.Media.TITLE);
-    	if (cursor == null)
-    	{
-    		System.out.println("Cursor error returning from the program");
-    	}
-    	else if (cursor.getCount() == 0)
-    	{
-    		System.out.println("There are no rows returned");
-    	}
-    	else
-    	{
-    		System.out.println("Number of rows are " + cursor.getCount() + " and column is " + cursor.getColumnName(0));
-    		for (int i=0;i<cursor.getColumnCount();i++)
-    			System.out.println("ColumnName : " + cursor.getColumnName(i));
-    		
-    		//cursor.moveToNext();
-    		while(cursor.moveToNext())
-    		{
-    			System.out.println("Title is " + cursor.getString(23));
-    		}
-    		//cursor.moveToNext();
-    		//System.out.println("the song title is " + cursor.getString(0));
-    		/*
-    		for (int i=0;i<cursor.getCount();i++)
-    			System.out.println("Found row " + cursor.getString(0));
-    			cursor.moveToNext();
-    		*/
-    	}
-    }
+    }    
 }

@@ -56,10 +56,9 @@ public class ArtistNamesListing extends Activity{
 					long arg3) {
 				// TODO Auto-generated method stub
 				Log.d("ArtistNamesListing","The selected item is "+ artistListView.getAdapter().getItem(arg2));
-				Intent childIntent = new Intent(activity,SingleAlbumListing.class);
+				Intent childIntent = new Intent(activity,SingleArtistListing.class);
 				childIntent.putExtra("artistName", artistListView.getAdapter().getItem(arg2).toString());
 				activity.startActivityForResult(childIntent, 1);
-			
 			}
 			
 		});

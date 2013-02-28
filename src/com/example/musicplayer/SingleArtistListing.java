@@ -20,11 +20,11 @@ import android.widget.Toast;
 
 public class SingleArtistListing extends Activity
 {
-	ListView albumSongs;
+	ListView artistSongs;
 	Button backButton;
 	Bundle receivedBundle;
-	String albumName;
-	ArrayAdapter <String> albumSongNamesAdapter;
+	String artistName;
+	ArrayAdapter <String> artistSongNamesAdapter;
 	String selectedSong;
 	Activity activity;
 	Intent resultIntent;
@@ -36,9 +36,9 @@ public class SingleArtistListing extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.album_layout);
 		
-		Log.d("SingleAlbumListing","started SingleAlbumListing and getting album songs");
-		albumSongs = (ListView)findViewById(R.id.albumList1);
-		Log.d("SingleAlbumListing","after getting list view and is " + albumSongs);
+		Log.d("SingleArtistListing","started SingleAlbumListing and getting album songs");
+		artistSongs = (ListView)findViewById(R.id.albumList1);
+		Log.d("SingleArtistListing","after getting list view and is " + artistSongs);
 		
 		backButton = (Button) findViewById(R.id.backButtonAlbum);
 		activity = this;
@@ -55,21 +55,21 @@ public class SingleArtistListing extends Activity
 				activity.finish();
 			}
 		});
-		albumSongs.setClickable(true);
-		albumSongs.setOnItemClickListener(new OnItemClickListener(){
+		artistSongs.setClickable(true);
+		artistSongs.setOnItemClickListener(new OnItemClickListener(){
 
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
 				
-				Log.d("SingleAlbumListing","the item selected is " + arg2);
+				Log.d("SingleArtistListing","the item selected is " + arg2);
 				// TODO Auto-generated method stub
 
-				selectedSong = albumSongs.getAdapter().getItem(arg2).toString();
-				Log.d("SingleAlbumListing","The selected song is " + selectedSong);
+				selectedSong = artistSongs.getAdapter().getItem(arg2).toString();
+				Log.d("SingleArtistListing","The selected song is " + selectedSong);
 				resultIntent = new Intent();
 				resultIntent.putExtra("songName", selectedSong);
-				resultIntent.putExtra("albumName", albumName);
+				resultIntent.putExtra("artistName", artistName);
 				setResult(Activity.RESULT_OK,resultIntent);
 				activity.finish();
 				
@@ -77,9 +77,9 @@ public class SingleArtistListing extends Activity
 			
 		});
 		receivedBundle = getIntent().getExtras();
-		Log.d("SingleAlbumListing","Before receving album name in album listing");
-		albumName = receivedBundle.getString("albumName");
-		Log.d("SingleAlbumListing","The album name received in the child activity is " + albumName);
+		Log.d("SingleArtistListing","Before receving album name in album listing");
+		artistName = receivedBundle.getString("artistName");
+		Log.d("SingleArtistListing","The album name received in the child activity is " + artistName);
 		loadFileSystem();
 	}
 
@@ -87,19 +87,20 @@ public class SingleArtistListing extends Activity
     {
     	ContentResolver contentResolver = this.getContentResolver();
     	Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-    	String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0 AND " + MediaStore.Audio.Media.ALBUM + " LIKE ?";
+    	String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0 AND " + MediaStore.Audio.Media.ARTIST + " LIKE ?";
     	String [] projection = 
     		{
     			MediaStore.Audio.Media._ID,
-    			MediaStore.Audio.Media.TITLE
+    			MediaStore.Audio.Media.TITLE,
+    			MediaStore.Audio.Media.ARTIST
     		};
-    	String [] arguments = {albumName};
+    	String [] arguments = {artistName};
     	
-    	Log.d("SingleAlbumListing","The uri is "+uri.getEncodedPath());
+    	Log.d("SingleArtistListing","The uri is "+uri.getEncodedPath());
     	Cursor cursor = contentResolver.query(uri,projection,selection,arguments,MediaStore.Audio.Media.TITLE);
     	if (cursor == null)
     	{
-    		Log.d("SingleAlbumListing","There was an error reading music files from the music library.");
+    		Log.d("SingleArtistListing","There was an error reading music files from the music library.");
     		messageToast.cancel();
     		messageToast = Toast.makeText(activity,"There was an error reading music files from the music library",Toast.LENGTH_SHORT);
     		messageToast.show();
@@ -107,20 +108,20 @@ public class SingleArtistListing extends Activity
     	}
     	else if (cursor.getCount() == 0)
     	{
-    		Log.d("SingleAlbumListing","There are no music files present in the library!");
+    		Log.d("SingleArtistListing","There are no music files present in the library!");
     		messageToast.cancel();
-    		messageToast = Toast.makeText(activity,"There are no songs in the album",Toast.LENGTH_SHORT);
+    		messageToast = Toast.makeText(activity,"There are no songs for this artist",Toast.LENGTH_SHORT);
     		messageToast.show();
     		return;
     	}
     	else
     	{
-    		Log.d("SingleAlbumListing","Songs present in the album");
-    		albumSongNamesAdapter= new ArrayAdapter<String>(this.getApplicationContext(),R.layout.album_name_view,R.id.albumName,songNames);
+    		Log.d("SingleArtistListing","Songs present for the artist");
+    		artistSongNamesAdapter= new ArrayAdapter<String>(this.getApplicationContext(),R.layout.album_name_view,R.id.albumName,songNames);
     		
-    		if (albumSongNamesAdapter== null)
+    		if (artistSongNamesAdapter== null)
     		{
-    			Log.d("songListing","Album List data is null");
+    			Log.d("songListing","Artist List data is null");
     			messageToast.cancel();
     			messageToast = Toast.makeText(activity,"Error reading music files from the music library!",Toast.LENGTH_SHORT);
     			messageToast.show();
@@ -128,9 +129,9 @@ public class SingleArtistListing extends Activity
     		}
     		while(cursor.moveToNext())
     		{
-    			albumSongNamesAdapter.add(cursor.getString(1));
+    			artistSongNamesAdapter.add(cursor.getString(1));
     		}
-    		this.albumSongs.setAdapter(albumSongNamesAdapter);
+    		this.artistSongs.setAdapter(artistSongNamesAdapter);
     	}
     }
 

@@ -36,7 +36,7 @@ public class SongButton extends Button {
 			public void onClick(View view)
 			{
 				Intent childIntent = new Intent(parentActivity,SongListLayout.class);
-				parentActivity.startActivityForResult(childIntent,2);
+				parentActivity.startActivityForResult(childIntent,1);
 			}
 		};
 		
