@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/backgroundgreen"
+    android:background="@drawable/sofa_wallpaper"
     android:orientation="vertical"
     android:showDividers="beginning|middle|end" >
     
@@ -11,39 +11,37 @@
         android:layout_weight="0.01"
         android:orientation="horizontal" >
 
+        <com.example.musicplayer.SongButton
+            android:id="@+id/songsButton"
+            android:layout_width="match_parent"
+            android:layout_height="75px"
+            android:layout_weight="0.33"
+            android:background="@drawable/songs"
+            android:textColor="@color/white"
+            android:width="153px" >
+            </com.example.musicplayer.SongButton>
+
         <com.example.musicplayer.AlbumButton
             android:id="@+id/albumButton"
             android:layout_width="match_parent"
-            android:layout_height="40px"
+            android:layout_height="75px"
             android:layout_weight="0.33"
-            android:background="@drawable/background1"
-            android:text="Album"
-            android:textColor="@color/white" />
+            android:background="@drawable/albums"
+            android:textColor="@color/white"
+            android:width="153px" >
+            </com.example.musicplayer.AlbumButton>
 
     <com.example.musicplayer.ArtistButton
         android:id="@+id/artistButton"
         android:layout_width="match_parent"
-        android:layout_height="30px"
+        android:layout_height="75px"
         android:layout_gravity="left|fill_horizontal"
         android:layout_weight="0.33"
-        android:background="@color/transparent"
-        android:height="40px"
-        android:text="Artist"
+        android:background="@drawable/artists"
+        android:width="153px"
         android:textColor="@color/white" >
 
 </com.example.musicplayer.ArtistButton>
-
-    <com.example.musicplayer.SongButton
-        android:id="@+id/songsButton"
-        android:layout_width="match_parent"
-        android:layout_height="40px"
-        android:layout_gravity="left|fill_horizontal"
-        android:layout_weight="0.33"
-        android:background="@color/transparent"
-        android:text="Songs"
-        android:textColor="@color/white" >
-
-</com.example.musicplayer.SongButton>
      
     </LinearLayout>
 
@@ -55,8 +53,9 @@
 
         <ImageView
             android:id="@+id/songArt"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="268dp"
+            android:layout_height="278dp"
+            android:background="@color/transparent"
             android:src="@color/transparent" />
 
     </FrameLayout>
@@ -85,34 +84,32 @@
 
             <Button
                 android:id="@+id/previousSongButton"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="left|fill_vertical|fill_horizontal"
                 android:layout_weight="0.33"
-                android:background="@color/transparent"
-                android:text="Previous"
-                android:textColor="@color/black_overlay" />
+                android:background="@drawable/previous_button"
+                android:textColor="@color/white"
+                android:width="153px" />
 
             <Button
                 android:id="@+id/playSongButton"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="left|fill_vertical|fill_horizontal"
-                android:layout_weight="0.33"
-                android:background="@color/transparent"
-                android:height="30px"
-                android:text="Play/Pause"
-                android:textColor="@color/black_overlay" />
+                android:background="@drawable/play_button"
+                android:height="50px"
+                android:textColor="@color/white"
+                android:width="153px" />
 
             <Button
                 android:id="@+id/nextSongButton"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="left|fill_vertical|fill_horizontal"
-                android:layout_weight="0.33"
-                android:background="@color/transparent"
-                android:text="Next"
-                android:textColor="@color/black_overlay" />
+                android:background="@drawable/next_song"
+                android:textColor="@color/white"
+                android:width="153px" />
 
         </LinearLayout>
 
