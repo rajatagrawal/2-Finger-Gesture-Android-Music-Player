@@ -1,6 +1,5 @@
 package com.example.musicplayer;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +16,6 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -26,6 +24,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
@@ -123,6 +122,7 @@ public class MainActivity extends Activity {
     InputStream songArtStream;
     ContentResolver contentResolver;
     Bitmap songArtBitmap;
+    LinearLayout backgroundLayout;
     OnGestureListener flingGesture = new OnGestureListener()
     {
 	    @Override
@@ -302,6 +302,8 @@ public class MainActivity extends Activity {
         this.songArtBitmap = null;
         this.songArtURLs = new ArrayList<Long>();
         
+        backgroundLayout = (LinearLayout) findViewById(R.id.backgroundLayout);
+        
         this.nextSongListener = new View.OnClickListener() {
 			
 			@Override
@@ -332,7 +334,7 @@ public class MainActivity extends Activity {
 					else
 					{
 						songImage.setImageBitmap(null);
-						songImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.background1));						
+						songImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.music_no_album_art));						
 					}
 					songImage.setBackgroundDrawable(null);
 	    			songArtBitmap = BitmapFactory.decodeStream(songArtStream);
@@ -350,7 +352,7 @@ public class MainActivity extends Activity {
 				catch(FileNotFoundException e)
 				{
 					songImage.setImageBitmap(null);
-    				songImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.background1));
+    				songImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.music_no_album_art));
 				}
 				catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -392,7 +394,7 @@ public class MainActivity extends Activity {
 					else
 					{
 						songImage.setImageBitmap(null);
-						songImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.background1));						
+						songImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.music_no_album_art));						
 					}
 					songImage.setBackgroundDrawable(null);
 	    			songArtBitmap = BitmapFactory.decodeStream(songArtStream);
@@ -411,7 +413,7 @@ public class MainActivity extends Activity {
 				catch (FileNotFoundException e)
 				{
 					songImage.setImageBitmap(null);
-    				songImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.background1));
+    				songImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.music_no_album_art));
 				}
 				catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -660,7 +662,7 @@ public class MainActivity extends Activity {
         
         gestureDetector = new GestureDetector(this.getApplicationContext(),flingGesture);
         
-        songImage.setOnTouchListener(new View.OnTouchListener() {
+        backgroundLayout.setOnTouchListener(new View.OnTouchListener() {
 			
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
@@ -1227,26 +1229,6 @@ public class MainActivity extends Activity {
     			return;
     		}
     		try {
-    			albumArtUri = ContentUris.withAppendedId(albumArtParentUri,this.songArtURLs.get(currentSongIndex));
-    			if (albumArtUri != null)
-    				songArtStream = contentResolver.openInputStream(albumArtUri);
-    			else
-    			{
-    				this.songImage.setImageBitmap(null);
-    				this.songImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.background1));
-    			}
-    			
-    			if (songArtStream != null)
-    			{
-    					Bitmap songArtBitmap = BitmapFactory.decodeStream(songArtStream);
-    					this.songImage.setImageBitmap(songArtBitmap);
-    			}
-    			else
-    			{
-    				this.songImage.setImageBitmap(null);
-    				this.songImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.background1));
-    			}
-    			
     			songPlayer.reset();
     			songPlayer.setDataSource(this,songQueue.get(currentSongIndex));
 				songPlayer.prepare();
@@ -1254,6 +1236,18 @@ public class MainActivity extends Activity {
 				messageToast = Toast.makeText(this,"Playing song" + songQueueNames.get(currentSongIndex), Toast.LENGTH_LONG);
 				messageToast.show();
 				songPlayer.start();
+				
+				albumArtUri = ContentUris.withAppendedId(albumArtParentUri,this.songArtURLs.get(currentSongIndex));
+    			if (albumArtUri != null)
+    				songArtStream = contentResolver.openInputStream(albumArtUri);
+    			else
+    			{
+    				this.songImage.setImageBitmap(null);
+    				this.songImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.music_no_album_art));
+    			}
+    			Bitmap songArtBitmap = BitmapFactory.decodeStream(songArtStream);
+    			this.songImage.setImageBitmap(songArtBitmap);
+    			
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1263,7 +1257,13 @@ public class MainActivity extends Activity {
 			} catch (IllegalStateException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (IOException e) {
+			}
+    		catch (FileNotFoundException e)
+    		{
+    			this.songImage.setImageBitmap(null);
+				this.songImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.music_no_album_art));
+    		}
+    		catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

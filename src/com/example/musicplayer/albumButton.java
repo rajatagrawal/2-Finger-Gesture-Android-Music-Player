@@ -53,7 +53,7 @@ public class AlbumButton extends Button {
 		public void onClick(View view)
 		{
 			Intent childIntent = new Intent(parentActivity,AlbumNamesListing.class);
-			view.setBackgroundColor(0x88FFFF00);
+			//view.setBackgroundColor(0x88FFFF00);
 			parentActivity.startActivityForResult(childIntent,2);
 		}
 	};

@@ -52,7 +52,7 @@ public class ArtistButton extends Button {
 		public void onClick(View view)
 		{
 			Intent childIntent = new Intent(parentActivity,ArtistNamesListing.class);
-			view.setBackgroundColor(0x88FFFF00);
+			//view.setBackgroundColor(0x88FFFF00);
 			parentActivity.startActivityForResult(childIntent,3);
 		}
 	};

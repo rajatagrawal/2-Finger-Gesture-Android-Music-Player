@@ -10,7 +10,7 @@
         android:background="@color/transparent"
         android:clickable="false"
         android:text="TextView"
-        android:textColor="@color/white"
+        android:textColor="@color/black_overlay"
         android:textSize="@dimen/textSize" >
 
        </TextView>

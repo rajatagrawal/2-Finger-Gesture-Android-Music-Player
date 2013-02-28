@@ -2,16 +2,31 @@
     android:id="@+id/albumScreenLayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/background_black"
+    android:background="@drawable/background_texture"
     android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/backButtonAlbum"
-        android:layout_width="152px"
-        android:layout_height="75px"
-        android:background="@drawable/back_button"
-        android:textColor="@color/white" >
-        </Button>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/black_overlay" >
+
+        <Button
+            android:id="@+id/backButtonAlbum"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/back_button"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/listCaption"
+            android:layout_width="270dp"
+            android:layout_height="match_parent"
+            android:background="@color/transparent"
+            android:text="Button"
+            android:textAllCaps="true"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
 
     <ListView
         android:id="@+id/albumList1"

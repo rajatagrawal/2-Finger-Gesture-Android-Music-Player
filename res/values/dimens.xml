@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="textSize">16px</dimen>
+    <dimen name="textSize">32px</dimen>
     <dimen name="barSize">5px</dimen></resources>

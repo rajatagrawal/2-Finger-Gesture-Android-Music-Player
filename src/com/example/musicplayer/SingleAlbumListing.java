@@ -30,6 +30,7 @@ public class SingleAlbumListing extends Activity
 	Intent resultIntent;
 	ArrayList <String> songNames;
 	Toast messageToast;
+	Button listCaption;
 	@Override
 	protected void onCreate (Bundle savedInstanceState)
 	{
@@ -41,6 +42,7 @@ public class SingleAlbumListing extends Activity
 		Log.d("SingleAlbumListing","after getting list view and is " + albumSongs);
 		
 		backButton = (Button) findViewById(R.id.backButtonAlbum);
+		listCaption = (Button) findViewById(R.id.listCaption);
 		activity = this;
 		songNames = new ArrayList<String>();
 		
@@ -79,6 +81,7 @@ public class SingleAlbumListing extends Activity
 		receivedBundle = getIntent().getExtras();
 		Log.d("SingleAlbumListing","Before receving album name in album listing");
 		albumName = receivedBundle.getString("albumName");
+		listCaption.setText(receivedBundle.getString("albumName"));
 		Log.d("SingleAlbumListing","The album name received in the child activity is " + albumName);
 		loadFileSystem();
 	}

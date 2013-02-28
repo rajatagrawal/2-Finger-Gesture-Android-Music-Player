@@ -26,6 +26,7 @@ public class ArtistNamesListing extends Activity{
 	ArrayList<String>artistNames;
 	Activity activity;
 	Toast messageToast;
+	Button listCaption;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -38,6 +39,8 @@ public class ArtistNamesListing extends Activity{
 		artistListView = (ListView)findViewById(R.id.albumList1);
 		activity = this;
 		backButton = (Button) findViewById(R.id.backButtonAlbum);
+		listCaption = (Button) findViewById(R.id.listCaption);
+		listCaption.setText("ARTISTS");
 		artistNames = new ArrayList<String>();
 		messageToast = new Toast(this);
 		if (artistListView == null || backButton == null)
