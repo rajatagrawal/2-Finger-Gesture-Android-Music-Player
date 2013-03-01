@@ -43,12 +43,19 @@ public class MainActivity extends Activity {
     ImageView songImage;
     Activity activity;
     MediaPlayer songPlayer;
+    
+    //declaring all the buttons and their listeners
     Button playPauseButton;
     Button previousSongButton;
     Button nextSongButton;
     AlbumButton albumButton;
     SongButton songButton;
     ArtistButton artistButton;
+    View.OnClickListener nextSongListener;
+    View.OnClickListener previousSongListener;
+    View.OnClickListener playPauseListener;
+    
+    
     ArrayList <Uri> songQueue;
     ArrayList <Long> songArtURLs;
     ArrayList <String> songQueueNames;
@@ -62,9 +69,7 @@ public class MainActivity extends Activity {
     int minVolume;
     int maxVolume;
     int initialSeekBarPosition;
-    View.OnClickListener nextSongListener;
-    View.OnClickListener previousSongListener;
-    View.OnClickListener playPauseListener;
+    
     
     Uri albumArtParentUri;
     Uri albumArtUri;
@@ -91,7 +96,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_fullscreen);
         
         activity = this;
-        Log.d("MainActivity","Hi this is a log statement");
+        Log.d("MainActivity","Starting Main Activity");
         
         songPlayer = new MediaPlayer();
         songPlayer.reset();
