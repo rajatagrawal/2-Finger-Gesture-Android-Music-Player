@@ -24,7 +24,8 @@
             android:background="@color/transparent"
             android:text="Button"
             android:textAllCaps="true"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:textStyle="normal|bold" />
 
     </LinearLayout>
 

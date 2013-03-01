@@ -31,31 +31,32 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     }
     public static final class drawable {
         public static final int albums=0x7f020000;
-        public static final int artists=0x7f020001;
-        public static final int back_button=0x7f020002;
-        public static final int background=0x7f020003;
-        public static final int background1=0x7f020004;
-        public static final int background_black=0x7f020005;
-        public static final int background_sofa=0x7f020006;
-        public static final int background_sofa_dark=0x7f020007;
-        public static final int background_texture=0x7f020008;
-        public static final int backgroundgreen=0x7f020009;
-        public static final int backgroundsimple=0x7f02000a;
-        public static final int blue_background=0x7f02000b;
-        public static final int buttonstates=0x7f02000c;
-        public static final int colouredwallpaper=0x7f02000d;
-        public static final int ic_launcher=0x7f02000e;
-        public static final int large=0x7f02000f;
-        public static final int music_no_album_art=0x7f020010;
-        public static final int next_song=0x7f020011;
-        public static final int pause_button=0x7f020012;
-        public static final int play_button=0x7f020013;
-        public static final int play_pause_icon=0x7f020014;
-        public static final int previous_button=0x7f020015;
-        public static final int sofa_wallpaper=0x7f020016;
-        public static final int songs=0x7f020017;
-        public static final int transparent_horizontal=0x7f020018;
-        public static final int transparent_vertical=0x7f020019;
+        public static final int app_icon=0x7f020001;
+        public static final int artists=0x7f020002;
+        public static final int back_button=0x7f020003;
+        public static final int background=0x7f020004;
+        public static final int background1=0x7f020005;
+        public static final int background_black=0x7f020006;
+        public static final int background_sofa=0x7f020007;
+        public static final int background_sofa_dark=0x7f020008;
+        public static final int background_texture=0x7f020009;
+        public static final int backgroundgreen=0x7f02000a;
+        public static final int backgroundsimple=0x7f02000b;
+        public static final int blue_background=0x7f02000c;
+        public static final int buttonstates=0x7f02000d;
+        public static final int colouredwallpaper=0x7f02000e;
+        public static final int ic_launcher=0x7f02000f;
+        public static final int large=0x7f020010;
+        public static final int music_no_album_art=0x7f020011;
+        public static final int next_song=0x7f020012;
+        public static final int pause_button=0x7f020013;
+        public static final int play_button=0x7f020014;
+        public static final int play_pause_icon=0x7f020015;
+        public static final int previous_button=0x7f020016;
+        public static final int sofa_wallpaper=0x7f020017;
+        public static final int songs=0x7f020018;
+        public static final int transparent_horizontal=0x7f020019;
+        public static final int transparent_vertical=0x7f02001a;
     }
     public static final class id {
         public static final int albumButton=0x7f080001;
