@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.widget.Toast;
 
 /**
  * This is one of the main classes of the application.
@@ -617,6 +618,9 @@ public class GestureEngine {
 								tap1Down = -1;
 								tap2Up = -1;
 								tap2Down = -1;
+								parentActivity.messageToast.cancel();
+								parentActivity.messageToast = Toast.makeText(parentActivity,"Sorry! No Double Tap Recognized. Please Double Tap faster",Toast.LENGTH_SHORT);
+								parentActivity.messageToast.show();
 							}
 								
 						}
@@ -649,6 +653,12 @@ public class GestureEngine {
 									// play the next song
 									parentActivity.playNextSong();
 								}
+							}
+							else
+							{
+								parentActivity.messageToast.cancel();
+								parentActivity.messageToast = Toast.makeText(parentActivity,"Sorry! No Swipe Recognized. Please Swipe Faster!", Toast.LENGTH_SHORT);
+								parentActivity.messageToast.show();
 							}
 							return true;
 						}

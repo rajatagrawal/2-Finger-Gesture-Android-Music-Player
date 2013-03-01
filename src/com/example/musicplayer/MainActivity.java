@@ -9,24 +9,21 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
-import android.database.Cursor;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.GestureDetector.OnGestureListener;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.musicplayer.util.SystemUiHider;
@@ -54,6 +51,7 @@ public class MainActivity extends Activity {
     View.OnClickListener nextSongListener;
     View.OnClickListener previousSongListener;
     View.OnClickListener playPauseListener;
+    TextView songNameTextView;
     
     
     //declaring the media player and song queues 
@@ -104,6 +102,9 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_fullscreen);
         
+        //disable the change in the orientation of the activity on rotating the phone
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        
         activity = this;
         Log.d("MainActivity","Starting Main Activity");
         
@@ -127,6 +128,7 @@ public class MainActivity extends Activity {
         artistButton.setParentActivity(this);
         backgroundLayout = (LinearLayout) findViewById(R.id.backgroundLayout);
         songImage = (ImageView) findViewById(R.id.songArt);
+        songNameTextView = (TextView) findViewById(R.id.currentSongText);
         
         
         //setting up the volume controls
@@ -167,6 +169,7 @@ public class MainActivity extends Activity {
 					messageToast.cancel();
 					messageToast = Toast.makeText(activity,"Please make a selection!", Toast.LENGTH_SHORT);
 					messageToast.show();
+					songNameTextView.setText("Playing song : None");
 					return;
 				}
 				currentSongIndex = (currentSongIndex + 1)%songQueue.size();
@@ -176,9 +179,10 @@ public class MainActivity extends Activity {
 					songPlayer.setDataSource(activity,songQueue.get(currentSongIndex));
 					songPlayer.prepare();
 					messageToast.cancel();
-					messageToast = Toast.makeText(activity,"Playing next song " + songQueueNames.get(currentSongIndex),Toast.LENGTH_SHORT);
+					messageToast = Toast.makeText(activity,"Playing Next Song\n" + songQueueNames.get(currentSongIndex),Toast.LENGTH_SHORT);
 					messageToast.show();
 					songPlayer.start();
+					songNameTextView.setText("Playing Song : " + songQueueNames.get(currentSongIndex));
 					
 					albumArtUri = ContentUris.withAppendedId(albumArtParentUri,songArtURLs.get(currentSongIndex));
 					if (albumArtUri != null)
@@ -223,6 +227,7 @@ public class MainActivity extends Activity {
 					messageToast.cancel();
 					messageToast = Toast.makeText(activity,"Please make a song selection!",Toast.LENGTH_SHORT);
 					messageToast.show();
+					songNameTextView.setText("Playing Song : None");
 					return;
 				}
 				if (currentSongIndex ==0)
@@ -235,9 +240,11 @@ public class MainActivity extends Activity {
 					songPlayer.setDataSource(activity, songQueue.get(currentSongIndex));
 					songPlayer.prepare();
 					messageToast.cancel();
-					messageToast = Toast.makeText(activity,"Playing previous song " + songQueueNames.get(currentSongIndex),Toast.LENGTH_SHORT);
+					messageToast = Toast.makeText(activity,"Playing Previous Song\n" + songQueueNames.get(currentSongIndex),Toast.LENGTH_SHORT);
 					messageToast.show();
 					songPlayer.start();
+					
+					songNameTextView.setText("Playing Song : " + songQueueNames.get(currentSongIndex));
 					
 					albumArtUri = ContentUris.withAppendedId(albumArtParentUri,songArtURLs.get(currentSongIndex));
 					if (albumArtUri != null)
@@ -281,9 +288,18 @@ public class MainActivity extends Activity {
 				try
 				{
 					if (songPlayer.isPlaying())
+					{
 						songPlayer.pause();
+						playPauseButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.pause_button));
+						messageToast.cancel();
+						messageToast = Toast.makeText(activity,"Paused the Playback!",Toast.LENGTH_SHORT);
+						messageToast.show();
+					}
 					else
+					{
 						songPlayer.start();
+						playPauseButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.play_button));
+					}
 				}
 				catch(NullPointerException e)
 				{

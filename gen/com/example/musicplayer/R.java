@@ -65,8 +65,8 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int artistButton=0x7f080002;
         public static final int backButtonAlbum=0x7f08000e;
         public static final int backgroundLayout=0x7f080003;
+        public static final int currentSongText=0x7f080004;
         public static final int imageView1=0x7f080008;
-        public static final int imageView2=0x7f080004;
         public static final int imageView3=0x7f080005;
         public static final int imageView4=0x7f080007;
         public static final int listCaption=0x7f08000f;

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -41,6 +42,11 @@ public class SingleArtistListing extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.album_layout);
+		
+		//disable the change in the orientation of the activity on rotating the phone
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        
+        //initialize the member variables of the class
 		artistSongs = (ListView)findViewById(R.id.albumList1);
 		backButton = (Button) findViewById(R.id.backButtonAlbum);
 		listCaption = (Button) findViewById(R.id.listCaption);

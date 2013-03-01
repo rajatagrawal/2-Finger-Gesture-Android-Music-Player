@@ -144,9 +144,11 @@ public class ActivityResultProcessing {
 	    			parentActivity.songPlayer.reset();
 	    			parentActivity.songPlayer.setDataSource(parentActivity,parentActivity.songQueue.get(parentActivity.currentSongIndex));
 					parentActivity.songPlayer.prepare();
-					parentActivity.messageToast = Toast.makeText(parentActivity,"Playing song" + parentActivity.songQueueNames.get(parentActivity.currentSongIndex), Toast.LENGTH_LONG);
+					parentActivity.messageToast = Toast.makeText(parentActivity,"Playing Song \n" + parentActivity.songQueueNames.get(parentActivity.currentSongIndex), Toast.LENGTH_LONG);
 					parentActivity.messageToast.show();
 					parentActivity.songPlayer.start();
+					
+					parentActivity.songNameTextView.setText("Playing Song : " + parentActivity.songQueueNames.get(parentActivity.currentSongIndex));
 					
 					// load the album art for the current song
 					parentActivity.albumArtUri = ContentUris.withAppendedId(parentActivity.albumArtParentUri,parentActivity.songArtURLs.get(parentActivity.currentSongIndex));

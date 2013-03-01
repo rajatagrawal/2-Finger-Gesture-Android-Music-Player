@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -38,6 +39,9 @@ public class ArtistNamesListing extends Activity{
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.album_layout);
+		
+		//disable the change in the orientation of the activity on rotating the phone
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		
 		
 		//initializing all the member variables of the class
