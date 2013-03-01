@@ -164,6 +164,10 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				
+				/*
+				 * if there has been no song selected, tell user that no song has been selected
+				 * and return from the function
+				 */
 				if (songQueue.size() == 0)
 				{
 					messageToast.cancel();
@@ -172,18 +176,25 @@ public class MainActivity extends Activity {
 					songNameTextView.setText("Playing song : None");
 					return;
 				}
+				
+				//move on to the next song
 				currentSongIndex = (currentSongIndex + 1)%songQueue.size();
 				songPlayer.reset();
 				try {
 					
+					//prepare the song player and the set the data source to the new song to be played
 					songPlayer.setDataSource(activity,songQueue.get(currentSongIndex));
 					songPlayer.prepare();
 					messageToast.cancel();
 					messageToast = Toast.makeText(activity,"Playing Next Song\n" + songQueueNames.get(currentSongIndex),Toast.LENGTH_SHORT);
 					messageToast.show();
 					songPlayer.start();
+					
+					//update the song name text on the splash screen
 					songNameTextView.setText("Playing Song : " + songQueueNames.get(currentSongIndex));
 					
+					
+					//load the album art for the song
 					albumArtUri = ContentUris.withAppendedId(albumArtParentUri,songArtURLs.get(currentSongIndex));
 					if (albumArtUri != null)
 						songArtStream = contentResolver.openInputStream(albumArtUri);
@@ -195,7 +206,11 @@ public class MainActivity extends Activity {
 					songImage.setBackgroundDrawable(null);
 	    			songArtBitmap = BitmapFactory.decodeStream(songArtStream);
 	    			songImage.setImageBitmap(songArtBitmap);
-				} catch (IllegalArgumentException e) {
+				}
+				
+				//catch errors incase there is problem opening the music file or loading the album art
+				
+				catch (IllegalArgumentException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (SecurityException e) {
@@ -205,6 +220,8 @@ public class MainActivity extends Activity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				
+				//load the default album art if the album art for a song doesn't exist
 				catch(FileNotFoundException e)
 				{
 					songImage.setImageBitmap(null);
@@ -222,6 +239,10 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 			
+				/*
+				 * if there has been no song selected, tell user that no song has been selected
+				 * and return from the function
+				 */
 				if (songQueue.size() ==0)
 				{
 					messageToast.cancel();
@@ -230,13 +251,18 @@ public class MainActivity extends Activity {
 					songNameTextView.setText("Playing Song : None");
 					return;
 				}
+				
+				//move on to the previous song
 				if (currentSongIndex ==0)
 					currentSongIndex = songQueue.size()-1;
 				else
 					currentSongIndex = currentSongIndex - 1;
+				
+				
 				songPlayer.reset();
 				try {
 					
+					//prepare the song player and the set the data source to the new song to be played
 					songPlayer.setDataSource(activity, songQueue.get(currentSongIndex));
 					songPlayer.prepare();
 					messageToast.cancel();
@@ -244,8 +270,10 @@ public class MainActivity extends Activity {
 					messageToast.show();
 					songPlayer.start();
 					
+					//update the song name text on the splash screen
 					songNameTextView.setText("Playing Song : " + songQueueNames.get(currentSongIndex));
 					
+					//load the album art for the song
 					albumArtUri = ContentUris.withAppendedId(albumArtParentUri,songArtURLs.get(currentSongIndex));
 					if (albumArtUri != null)
 						songArtStream = contentResolver.openInputStream(albumArtUri);
@@ -258,7 +286,10 @@ public class MainActivity extends Activity {
 	    			songArtBitmap = BitmapFactory.decodeStream(songArtStream);
 	    			songImage.setImageBitmap(songArtBitmap);
 	    			
-				} catch (IllegalArgumentException e) {
+				}
+				//catch errors incase there is problem opening the music file or loading the album art
+				
+				catch (IllegalArgumentException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (SecurityException e) {
@@ -268,6 +299,8 @@ public class MainActivity extends Activity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				
+				//load the default album art if the album art for a song doesn't exist
 				catch (FileNotFoundException e)
 				{
 					songImage.setImageBitmap(null);
@@ -279,6 +312,8 @@ public class MainActivity extends Activity {
 				}
 			}
 		};
+		
+		
 		this.playPauseListener = new View.OnClickListener() {
 			
 			@Override
@@ -287,6 +322,8 @@ public class MainActivity extends Activity {
 				Log.d("MainActivity","Play pause button clicked");
 				try
 				{
+					
+					// if the song player is playing a song, pause it
 					if (songPlayer.isPlaying())
 					{
 						songPlayer.pause();
@@ -295,6 +332,7 @@ public class MainActivity extends Activity {
 						messageToast = Toast.makeText(activity,"Paused the Playback!",Toast.LENGTH_SHORT);
 						messageToast.show();
 					}
+					// if the song player is paused, resume playing the song player
 					else
 					{
 						songPlayer.start();
@@ -312,8 +350,12 @@ public class MainActivity extends Activity {
 				
 			}
 		};
+		
+		//setup the seek bar for showing the current volume
         volumeControl.setOnSeekBarChangeListener(new OnSeekBarChangeListener()
         {
+        	
+        	// increase the volume of playback whenever the progress on the seekbar changes
         	@Override
 			public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
 				// TODO Auto-generated method stub
@@ -327,6 +369,9 @@ public class MainActivity extends Activity {
 				initialSeekBarPosition = volumeControl.getProgress();
 			}
 
+			/**
+			 * Display the final volume set to the user
+			 */
 			@Override
 			public void onStopTrackingTouch(SeekBar arg0) {
 				// TODO Auto-generated method stub
