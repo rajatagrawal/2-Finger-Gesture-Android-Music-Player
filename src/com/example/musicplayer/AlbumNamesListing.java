@@ -18,6 +18,11 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+/**
+ * This class displays all the album names present for all the songs in the music library present on the SD memory card of the phone
+ * @author rajatagrawal
+ *
+ */
 public class AlbumNamesListing extends Activity{
 
 	ListView albumListView;
@@ -36,6 +41,8 @@ public class AlbumNamesListing extends Activity{
 		
 		
 		Log.d("AlbumNamesListing","In album names listing activity");
+		
+		//setting up the member variables of the class
 		albumListView = (ListView)findViewById(R.id.albumList1);
 		activity = this;
 		backButton = (Button) findViewById(R.id.backButtonAlbum);
@@ -43,6 +50,8 @@ public class AlbumNamesListing extends Activity{
 		listCaption.setText("ALBUMS");
 		albumNames = new ArrayList<String>();
 		messageToast = new Toast(this);
+		
+		
 		if (albumListView == null || backButton == null)
 		{
 			Log.d("AlbumNamesListing","There is an error reading the layout structure. Quitting selection of album.");
@@ -50,8 +59,11 @@ public class AlbumNamesListing extends Activity{
 			// error messages on the intent that is returned to the main activity
 			finish();
 		}
+		
 		this.setupButtonLayout();
 		albumListView.setClickable(true);
+		
+		// this on click listener starts a new activity passing the selected album name as the argument.
 		albumListView.setOnItemClickListener(new OnItemClickListener(){
 
 			@Override
@@ -68,6 +80,11 @@ public class AlbumNamesListing extends Activity{
 		});
 		loadFileSystem();
 	}
+	/**
+	 * This function returns the album name and the song selected by the user.
+	 * If the users returns back without selecting any song, this function returns RESULT_CANCELLED flag message on returning the
+	 * result of the activity.
+	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent intent)
 	{
@@ -96,6 +113,13 @@ public class AlbumNamesListing extends Activity{
 		});
 	}
 	
+	/**
+	 * This function loads all the album names corresponding to all the songs present in the music library of the 
+	 * SD card of the phone.
+	 * 
+	 * If there are no songs in the music library, or there is an error retreiving them, the function returns in between without
+	 * loading any album names.
+	 */
 	private void loadFileSystem()
     {
     	ContentResolver contentResolver = this.getContentResolver();
@@ -108,6 +132,8 @@ public class AlbumNamesListing extends Activity{
     		};
     	Log.d("AlbumNamesListing","The changed uri is "+ uri.getEncodedPath());
     	Cursor cursor = contentResolver.query(uri,projection,selection,null,MediaStore.Audio.Media.ALBUM);
+    	
+    	// if the program couldn't get the files from the SD card of the phone
     	if (cursor == null)
     	{
     		messageToast.cancel();
@@ -116,6 +142,8 @@ public class AlbumNamesListing extends Activity{
     		Log.d("AlbumNamesListing","There was an error reading music files from the music library.");
     		return;
     	}
+    	
+    	// if the number of songs present in the music library is zero
     	else if (cursor.getCount() == 0)
     	{
     		Log.d("AlbumNamesListing","There are no music files present in the library!");
@@ -124,6 +152,8 @@ public class AlbumNamesListing extends Activity{
     		messageToast.show();
     		return;
     	}
+    	
+    	//found music files in the SD card of the phone
     	else
     	{
     		Log.d("AlbumNamesListing","Music files present in the music library");
@@ -136,6 +166,8 @@ public class AlbumNamesListing extends Activity{
     			messageToast.show();
     			return;
     		}
+    		
+    		// add unique album names for the songs present in the music library to an array storing the unique album names
     		while(cursor.moveToNext())
     		{
     			if (albumNames.size() == 0)
@@ -145,6 +177,8 @@ public class AlbumNamesListing extends Activity{
     				albumListDataAdapter.add(cursor.getString(1));
     			}
     		}
+    		
+    		//set the adapter for the list view to the array holding unique album names
     		albumListView.setAdapter(albumListDataAdapter);
     		Log.d("AlbumNamesListing","Number of Albums are " + cursor.getCount());
     	}

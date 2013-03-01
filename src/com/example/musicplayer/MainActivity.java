@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
     int counter = 0;
     ImageView songImage;
     Activity activity;
-    MediaPlayer songPlayer;
+    
     
     //declaring all the buttons and their listeners
     Button playPauseButton;
@@ -56,12 +56,18 @@ public class MainActivity extends Activity {
     View.OnClickListener playPauseListener;
     
     
+    //declaring the media player and song queues 
+    MediaPlayer songPlayer;
     ArrayList <Uri> songQueue;
     ArrayList <Long> songArtURLs;
     ArrayList <String> songQueueNames;
     String currentSong;
     int currentSongIndex;
+    
+    //A global copy of Toast object to show messages to the user
     Toast messageToast;
+    
+    //declaring the volume controls for the song player
     SeekBar volumeControl;
     AudioManager audioManager;
     int seekBarMin;
@@ -71,11 +77,14 @@ public class MainActivity extends Activity {
     int initialSeekBarPosition;
     
     
+    //declaring the variables to display the cover art for the album being played
     Uri albumArtParentUri;
     Uri albumArtUri;
     InputStream songArtStream;
     ContentResolver contentResolver;
     Bitmap songArtBitmap;
+    
+    //declaring the gesture engine and touch listeners
     LinearLayout backgroundLayout;
     GestureEngine gestureEngine;
     ActivityResultProcessing activityResultProcessing;
@@ -98,33 +107,55 @@ public class MainActivity extends Activity {
         activity = this;
         Log.d("MainActivity","Starting Main Activity");
         
+        //setting up the media player and the song queue variables
         songPlayer = new MediaPlayer();
         songPlayer.reset();
-        playPauseButton = (Button) findViewById(R.id.playSongButton);
-        previousSongButton = (Button) findViewById(R.id.previousSongButton);
-        nextSongButton = (Button) findViewById(R.id.nextSongButton);
         songQueue = new ArrayList<Uri>();
         songQueueNames = new ArrayList<String>();
         currentSongIndex = -1;
         currentSong = null;
+        
+        //setting up the buttons in the layout
+        playPauseButton = (Button) findViewById(R.id.playSongButton);
+        previousSongButton = (Button) findViewById(R.id.previousSongButton);
+        nextSongButton = (Button) findViewById(R.id.nextSongButton);
+        albumButton = (AlbumButton) findViewById(R.id.albumButton);
+        albumButton.setParentActivity(this);
+        songButton = (SongButton) findViewById(R.id.songsButton);
+        songButton.setParentActivity(this);
+        artistButton = (ArtistButton) findViewById(R.id.artistButton);
+        artistButton.setParentActivity(this);
+        backgroundLayout = (LinearLayout) findViewById(R.id.backgroundLayout);
+        songImage = (ImageView) findViewById(R.id.songArt);
+        
+        
+        //setting up the volume controls
         audioManager = (AudioManager) this.getSystemService(AUDIO_SERVICE);
         volumeControl = (SeekBar) findViewById(R.id.seekBar1);
         maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         minVolume = 0;
         seekBarMin = 0;
         seekBarMax = volumeControl.getMax();
-        messageToast = new Toast(this);
         this.setInitialProgressBar();
+        
+        messageToast = new Toast(this);
+        
+        //setting up the variables to show the album art for the song being played
         this.albumArtParentUri = Uri.parse("content://media/external/audio/albumart");
         this.albumArtUri = null;
         this.songArtStream = null;
         this.songArtBitmap = null;
         this.songArtURLs = new ArrayList<Long>();
+        
+        //the gesture engine recognizes the touch gestures made by the user
         gestureEngine = new GestureEngine(this);
+        
+        //activityResultProcessing processes the result sent by the child activities, i.e album,song and artist listing
         activityResultProcessing = new ActivityResultProcessing();
         
-        backgroundLayout = (LinearLayout) findViewById(R.id.backgroundLayout);
         
+        
+        //defining the on click listeners for the music player buttons
         this.nextSongListener = new View.OnClickListener() {
 			
 			@Override
@@ -181,8 +212,7 @@ public class MainActivity extends Activity {
 				}
 			}
 		};
-        
-		this.previousSongListener = new View.OnClickListener() {
+        this.previousSongListener = new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -291,10 +321,13 @@ public class MainActivity extends Activity {
         });
         
         
-        
+        //initialize the music buttons with their respective on click listeners
         playPauseButton.setOnClickListener(this.playPauseListener);
         previousSongButton.setOnClickListener(this.previousSongListener);
         nextSongButton.setOnClickListener(this.nextSongListener);
+        
+        
+        //setting up the song player
         songPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 			
 			@Override
@@ -325,7 +358,6 @@ public class MainActivity extends Activity {
 				
 			}
 		});
-        
         songPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
 			
 			@Override
@@ -340,22 +372,7 @@ public class MainActivity extends Activity {
 			}
 		});
         
-        Log.d("MainActivity","The current time is " + System.currentTimeMillis());
-        
-        albumButton = (AlbumButton) findViewById(R.id.albumButton);
-        albumButton.setParentActivity(this);
-        
-        songButton = (SongButton) findViewById(R.id.songsButton);
-        songButton.setParentActivity(this);
-        
-        artistButton = (ArtistButton) findViewById(R.id.artistButton);
-        artistButton.setParentActivity(this);
-        songImage = (ImageView) findViewById(R.id.songArt);
-        if (songImage == null)
-        	Log.d("MainActivity","Song Image is null");
-        else
-        	Log.d("MainActivity","Song Image is not null");
-          
+        //initializing the touch gesture listener for the application
         backgroundLayout.setOnTouchListener(gestureEngine.onTouchListener);
     }
     public void setInitialProgressBar()

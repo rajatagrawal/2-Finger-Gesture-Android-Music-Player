@@ -48,6 +48,9 @@ public class AlbumButton extends Button {
 		super(context, attrs, defStyle);
 		// TODO Auto-generated constructor stub
 	}
+	/**
+	 * This on click listener for the album button starts a new activity to select an album to listen to
+	 */
 	OnClickListener onClickListener = new OnClickListener ()
 	{
 		public void onClick(View view)

@@ -18,7 +18,12 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class SongListLayout extends Activity{
+/**
+ * This class shows to the user all the songs present in the SD card of the phone. The user can then select the song she wants to listen to.
+ * @author rajatagrawal
+ *
+ */
+public class SongsListing extends Activity{
 
 	ListView songListView;
 	Button backButton;
@@ -36,6 +41,7 @@ public class SongListLayout extends Activity{
 		setContentView(R.layout.album_layout);
 		
 		
+		// initializing the member variables of the class
 		Log.d("songLisiting","In song listing activity");
 		songListView = (ListView)findViewById(R.id.albumList1);
 		songAlbumName = new ArrayList<String>();
@@ -45,17 +51,7 @@ public class SongListLayout extends Activity{
 		listCaption.setText("SONGS");
 		songNames = new ArrayList<String>();
 		messageToast = new Toast(this);
-		if (songListView == null || backButton == null)
-		{
-			messageToast.cancel();
-			messageToast = Toast.makeText(this,"There is an error reading the layout of the xml file. Quitting",Toast.LENGTH_SHORT);
-			messageToast.show();
-			Log.d("songListing","There is an error reading the layout structure. Quitting selection of album.");
-			
-			// error messages on the intent that is returned to the main activity
-			setResult(Activity.RESULT_CANCELED);
-			finish();
-		}
+		
 		this.setupButtonLayout();
 		songListView.setClickable(true);
 		songListView.setOnItemClickListener(new OnItemClickListener(){
@@ -97,6 +93,12 @@ public class SongListLayout extends Activity{
 		});
 	}
 	
+	/**
+	 * This function loads all the songs corresponding to the album selected by the user.
+	 * 
+	 * If there are no songs for that album, or there is an error retrieving them, the function returns in between without
+	 * loading any album names.
+	 */
 	private void loadFileSystem()
     {
     	ContentResolver contentResolver = this.getContentResolver();
@@ -110,6 +112,8 @@ public class SongListLayout extends Activity{
     		};
     	Log.d("songListing","The uri of the media directory is "+ uri.getEncodedPath());
     	Cursor cursor = contentResolver.query(uri,projection,selection,null,MediaStore.Audio.Media.TITLE);
+
+    	// if there is an error reading the music library files from the SD card of the phone.
     	if (cursor == null)
     	{
     		Log.d("songListing","There was an error reading music files from the music library.");
@@ -118,6 +122,8 @@ public class SongListLayout extends Activity{
     		messageToast.show();
     		return;
     	}
+    	
+    	// if there are no songs present in the SD card of the phone
     	else if (cursor.getCount() == 0)
     	{
     		Log.d("songListing","There are no music files present in the library!");
@@ -126,6 +132,8 @@ public class SongListLayout extends Activity{
     		messageToast.show();
     		return;
     	}
+    	
+    	// songs are present in the SD card of the phone.
     	else
     	{
     		Log.d("songListing","Songs present in the music library");

@@ -16,6 +16,11 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
+/**
+ * This class is a Wrapper class for the Button class in android to setup on click listener for this button.
+ * @author rajatagrawal
+ *
+ */
 public class SongButton extends Button {
 	
 	Activity parentActivity;
@@ -31,11 +36,12 @@ public class SongButton extends Button {
 		
 		Log.d("songButton","Constructor of the song button class executed");
 		
+		// on clicking this button, start a child activity that will list all the songs present in the SD card of the phone.
 		onClickListener = new OnClickListener ()
 		{
 			public void onClick(View view)
 			{
-				Intent childIntent = new Intent(parentActivity,SongListLayout.class);
+				Intent childIntent = new Intent(parentActivity,SongsListing.class);
 				parentActivity.startActivityForResult(childIntent,1);
 			}
 		};

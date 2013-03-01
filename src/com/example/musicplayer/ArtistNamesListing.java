@@ -18,6 +18,11 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+/**
+ * This class lists all the artists present for all the songs present in the music library of the SD card of the phone.
+ * @author rajatagrawal
+ *
+ */
 public class ArtistNamesListing extends Activity{
 
 	ListView artistListView;
@@ -35,6 +40,7 @@ public class ArtistNamesListing extends Activity{
 		setContentView(R.layout.album_layout);
 		
 		
+		//initializing all the member variables of the class
 		Log.d("ArtistNamesListing","In artist names listing activity");
 		artistListView = (ListView)findViewById(R.id.albumList1);
 		activity = this;
@@ -43,15 +49,11 @@ public class ArtistNamesListing extends Activity{
 		listCaption.setText("ARTISTS");
 		artistNames = new ArrayList<String>();
 		messageToast = new Toast(this);
-		if (artistListView == null || backButton == null)
-		{
-			Log.d("ArtistNamesListing","There is an error reading the layout structure. Quitting selection of artist.");
-			
-			// error messages on the intent that is returned to the main activity
-			finish();
-		}
 		this.setupButtonLayout();
 		artistListView.setClickable(true);
+		
+		
+		//returns the song and the artist for that song selected by the user to the parent activity
 		artistListView.setOnItemClickListener(new OnItemClickListener(){
 
 			@Override
@@ -94,7 +96,14 @@ public class ArtistNamesListing extends Activity{
 			}
 		});
 	}
-	
+
+	/**
+	 * This function loads all the artist names corresponding to all the songs present in the music library of the 
+	 * SD card of the phone.
+	 * 
+	 * If there are no songs in the music library, or there is an error retrieving them, the function returns in between without
+	 * loading any album names.
+	 */
 	private void loadFileSystem()
     {
     	ContentResolver contentResolver = this.getContentResolver();
@@ -107,6 +116,8 @@ public class ArtistNamesListing extends Activity{
     		};
     	Log.d("ArtistNamesListing","The changed uri is "+ uri.getEncodedPath());
     	Cursor cursor = contentResolver.query(uri,projection,selection,null,MediaStore.Audio.Media.ARTIST);
+    	
+    	// if there is an error reading music files from the music library on the SD card of the phone.
     	if (cursor == null)
     	{
     		messageToast.cancel();
@@ -115,6 +126,7 @@ public class ArtistNamesListing extends Activity{
     		Log.d("ArtistNamesListing","There was an error reading music files from the music library.");
     		return;
     	}
+    	// if there are no songs present in the music library on the SD card of the phone.
     	else if (cursor.getCount() == 0)
     	{
     		Log.d("ArtistNamesListing","There are no music files present in the library!");
@@ -123,6 +135,8 @@ public class ArtistNamesListing extends Activity{
     		messageToast.show();
     		return;
     	}
+    	
+    	//songs are present in the music library of the SD card of the phone.
     	else
     	{
     		Log.d("ArtistNamesListing","Music files present in the music library");
@@ -135,6 +149,7 @@ public class ArtistNamesListing extends Activity{
     			messageToast.show();
     			return;
     		}
+    		// only add the unique artist names to the array storing the unique artist names.
     		while(cursor.moveToNext())
     		{
     			if (artistNames.size() == 0)
@@ -144,6 +159,8 @@ public class ArtistNamesListing extends Activity{
     				artistListDataAdapter.add(cursor.getString(1));
     			}
     		}
+    		
+    		// set the adapter for the list view that shows the artist names for all the songs present in the SD card of the phone memory.
     		artistListView.setAdapter(artistListDataAdapter);
     		Log.d("ArtistNamesListing","Number of Albums are " + cursor.getCount());
     	}

@@ -18,6 +18,11 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+/**
+ * This class shows all the songs for a single artist selected by the user
+ * @author rajatagrawal
+ *
+ */
 public class SingleArtistListing extends Activity
 {
 	ListView artistSongs;
@@ -36,18 +41,15 @@ public class SingleArtistListing extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.album_layout);
-		
-		Log.d("SingleArtistListing","started SingleAlbumListing and getting album songs");
 		artistSongs = (ListView)findViewById(R.id.albumList1);
-		Log.d("SingleArtistListing","after getting list view and is " + artistSongs);
-		
 		backButton = (Button) findViewById(R.id.backButtonAlbum);
 		listCaption = (Button) findViewById(R.id.listCaption);
 		activity = this;
 		songNames = new ArrayList<String>();
-		
 		messageToast = new Toast(this);
 		
+		// if the user doesn't select any song and returns without selecting a song.
+		// this click listener returns RESULT_CANCELLED as the result when the user clicks this button.
 		backButton.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -58,6 +60,8 @@ public class SingleArtistListing extends Activity
 			}
 		});
 		artistSongs.setClickable(true);
+		
+		// this click listener sets the song and the artist for the song selected by the user to be returned to the parent activity.
 		artistSongs.setOnItemClickListener(new OnItemClickListener(){
 
 			@Override
@@ -79,13 +83,17 @@ public class SingleArtistListing extends Activity
 			
 		});
 		receivedBundle = getIntent().getExtras();
-		Log.d("SingleArtistListing","Before receving album name in album listing");
 		artistName = receivedBundle.getString("artistName");
 		listCaption.setText(receivedBundle.getString("artistName").toUpperCase());
-		Log.d("SingleArtistListing","The album name received in the child activity is " + artistName);
 		loadFileSystem();
 	}
 
+	/**
+	 * This function loads all the songs corresponding to the artist selected by the user.
+	 * 
+	 * If there are no songs for that artist, or there is an error retrieving them, the function returns in between without
+	 * loading any album names.
+	 */
 	private void loadFileSystem()
     {
     	ContentResolver contentResolver = this.getContentResolver();
@@ -101,6 +109,8 @@ public class SingleArtistListing extends Activity
     	
     	Log.d("SingleArtistListing","The uri is "+uri.getEncodedPath());
     	Cursor cursor = contentResolver.query(uri,projection,selection,arguments,MediaStore.Audio.Media.TITLE);
+    	
+    	// if there is an error reading the songs on the SD card of the phone
     	if (cursor == null)
     	{
     		Log.d("SingleArtistListing","There was an error reading music files from the music library.");
@@ -109,6 +119,7 @@ public class SingleArtistListing extends Activity
     		messageToast.show();
     		return;
     	}
+    	// if there are no songs present in the music library of the SD card of the phone memory.
     	else if (cursor.getCount() == 0)
     	{
     		Log.d("SingleArtistListing","There are no music files present in the library!");
@@ -117,6 +128,8 @@ public class SingleArtistListing extends Activity
     		messageToast.show();
     		return;
     	}
+    	
+    	// songs are present in the music library on the SD card of the phone memory.
     	else
     	{
     		Log.d("SingleArtistListing","Songs present for the artist");

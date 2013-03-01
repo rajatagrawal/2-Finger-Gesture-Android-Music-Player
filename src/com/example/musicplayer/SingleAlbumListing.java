@@ -18,6 +18,11 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+/**
+ * This class shows all the songs present in an album selected by a user to her
+ * @author rajatagrawal
+ *
+ */
 public class SingleAlbumListing extends Activity
 {
 	ListView albumSongs;
@@ -37,10 +42,8 @@ public class SingleAlbumListing extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.album_layout);
 		
-		Log.d("SingleAlbumListing","started SingleAlbumListing and getting album songs");
+		// initializing the member variables of the class
 		albumSongs = (ListView)findViewById(R.id.albumList1);
-		Log.d("SingleAlbumListing","after getting list view and is " + albumSongs);
-		
 		backButton = (Button) findViewById(R.id.backButtonAlbum);
 		listCaption = (Button) findViewById(R.id.listCaption);
 		activity = this;
@@ -48,6 +51,7 @@ public class SingleAlbumListing extends Activity
 		
 		messageToast = new Toast(this);
 		
+		//this on click listener returns RESULT_CANCELLED flag message since the user didn't select any song to its parent activity.
 		backButton.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -58,6 +62,8 @@ public class SingleAlbumListing extends Activity
 			}
 		});
 		albumSongs.setClickable(true);
+		
+		// this on click listener returns the song and the album selected by the user to its parent activity.
 		albumSongs.setOnItemClickListener(new OnItemClickListener(){
 
 			@Override
@@ -86,6 +92,12 @@ public class SingleAlbumListing extends Activity
 		loadFileSystem();
 	}
 
+	/**
+	 * This function loads all the songs corresponding to the album selected by the user.
+	 * 
+	 * If there are no songs for that album, or there is an error retrieving them, the function returns in between without
+	 * loading any album names.
+	 */
 	private void loadFileSystem()
     {
     	ContentResolver contentResolver = this.getContentResolver();
@@ -100,6 +112,8 @@ public class SingleAlbumListing extends Activity
     	
     	Log.d("SingleAlbumListing","The uri is "+uri.getEncodedPath());
     	Cursor cursor = contentResolver.query(uri,projection,selection,arguments,MediaStore.Audio.Media.TITLE);
+    	
+    	// if there was an error accessing the music files on the SD card of the phone.
     	if (cursor == null)
     	{
     		Log.d("SingleAlbumListing","There was an error reading music files from the music library.");
@@ -108,6 +122,8 @@ public class SingleAlbumListing extends Activity
     		messageToast.show();
     		return;
     	}
+    	
+    	// if there are no music files present for the album selected by the user
     	else if (cursor.getCount() == 0)
     	{
     		Log.d("SingleAlbumListing","There are no music files present in the library!");
@@ -116,6 +132,8 @@ public class SingleAlbumListing extends Activity
     		messageToast.show();
     		return;
     	}
+    	
+    	// music files present for the album selected by the user
     	else
     	{
     		Log.d("SingleAlbumListing","Songs present in the album");

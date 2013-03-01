@@ -17,6 +17,11 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
+/**
+ * This class is the Wrapper class for the Button class to add onclicklistener for the artist button
+ * @author rajatagrawal
+ *
+ */
 public class ArtistButton extends Button {
 	
 	Activity parentActivity;
@@ -47,6 +52,9 @@ public class ArtistButton extends Button {
 		super(context, attrs, defStyle);
 		// TODO Auto-generated constructor stub
 	}
+	
+	// start a child activity that will start listing all the artists for all the songs present in the music library of the SD
+	// card of the phone.
 	OnClickListener onClickListener = new OnClickListener ()
 	{
 		public void onClick(View view)
