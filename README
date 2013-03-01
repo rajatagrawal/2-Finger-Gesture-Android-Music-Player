@@ -1,0 +1,16 @@
+This is a gesture based music player.
+
+This music player has the following gestures
+
+1. Two finger right swipe to move to previous song
+2. Two finger left swipe to move to next song
+3. Two finger scroll up to increase the song volume
+4. Two finger scroll down to decrease the song volume
+5. Two finger double tap to play/pause the song
+
+The music plays songs in following modes:
+1. Play all the songs in the music library on the SD card of the phone.
+2. Play all the songs of an album.
+3. Play all the songs of an artist.
+
+All the gesture recognition process has been written by me since Android doesn't provide any api to do gesture recognition for more than one finger gestures.
